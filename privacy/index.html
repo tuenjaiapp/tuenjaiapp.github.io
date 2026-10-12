@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>นโยบายเตือนใจ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column, a sticky bar with language + document switch, numbered clauses like a contract */
+:root{
+  --bg:#FFFFFF; --panel:#FFF7DD; --ink:#33261A; --muted:#7A6A58; --line:#EFE3C6;
+  --accent:#E09A00; --accent-ink:#7A4E00; --mark:#FFF0B8;
+  --f-display:"Mitr","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17130F; --panel:#241D15; --ink:#F3EADB; --muted:#B8A88F; --line:#3A3024;
+  --accent:#F5B82E; --accent-ink:#FFD877; --mark:#4A3A12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17130F; --panel:#241D15; --ink:#F3EADB; --muted:#B8A88F; --line:#3A3024;
+  --accent:#F5B82E; --accent-ink:#FFD877; --mark:#4A3A12; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;padding-inline:16px;padding-block:0 48px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+.bar-in{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.brand{font-family:var(--f-display);font-weight:600;font-size:18px;display:flex;gap:8px;align-items:center}
+.dot{width:22px;height:22px;border-radius:50%;background:var(--accent);display:inline-grid;place-items:center;color:#fff;font-size:13px}
+.seg{display:flex;gap:4px;background:var(--panel);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:500 13px var(--f-body);padding:5px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.seg button:focus-visible,.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{max-width:760px;margin:0 auto}
+.tabs{display:flex;gap:20px;margin:28px 0 8px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs a{color:var(--muted);text-decoration:none;font-weight:600;padding:8px 0;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a.on{color:var(--ink);border-color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(26px,5vw,34px);line-height:1.25;margin:24px 0 6px;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px}
+.intro{background:var(--panel);border-radius:14px;padding:12px 18px;margin:18px 0 8px}
+.intro p{margin:6px 0}
+h2{font-family:var(--f-display);font-weight:500;font-size:20px;line-height:1.4;margin:34px 0 6px;display:flex;gap:10px;align-items:baseline;text-wrap:balance}
+h2 .n{font-family:var(--f-body);font-variant-numeric:tabular-nums;color:var(--accent-ink);font-size:14px;font-weight:600;min-width:1.6em}
+p,li{max-width:66ch}
+ul{padding-left:1.2em;margin:6px 0} li{margin:4px 0}
+.k{font-weight:600}
+code,.cmd{font-family:var(--f-body);background:var(--mark);padding:1px 7px;border-radius:6px;font-weight:600;white-space:nowrap}
+.tbl{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:13px;letter-spacing:.02em}
+.price{font-variant-numeric:tabular-nums;white-space:nowrap}
+.contact{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel);border-radius:14px;padding:14px 16px;margin-top:10px}
+.contact b{font-size:17px;user-select:all;word-break:break-all}
+.copy{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 10px;font:500 13px var(--f-body);cursor:pointer}
+a{color:var(--accent-ink)}
+.doc[hidden]{display:none}
+footer{max-width:760px;margin:44px auto 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+[lang="en"] .th,[lang="th"] .en{display:none}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <div class="brand"><span class="dot">🐥</span><span class="th">เตือนใจ</span><span class="en">Tuenjai</span></div>
+  <div class="seg" role="group" aria-label="Language">
+    <button id="l-th" type="button" data-l="th" aria-pressed="true">ไทย</button>
+    <button id="l-en" type="button" data-l="en" aria-pressed="false">English</button>
+  </div>
+</div></div>
+
+<main id="top" lang="th">
+  <nav class="tabs" aria-label="Documents">
+    <a href="#privacy" data-d="privacy" class="on"><span class="th">นโยบายความเป็นส่วนตัว</span><span class="en">Privacy Policy</span></a>
+    <a href="#terms" data-d="terms"><span class="th">ข้อตกลงการใช้งาน</span><span class="en">Terms of Use</span></a>
+  </nav>
+
+  <!-- ================= PRIVACY ================= -->
+  <article class="doc" id="privacy">
+    <h1><span class="th">นโยบายความเป็นส่วนตัว</span><span class="en">Privacy Policy</span></h1>
+    <div class="meta"><span class="th">มีผลตั้งแต่ 12 ตุลาคม 2569 · ปรับปรุงล่าสุด 12 ตุลาคม 2569</span><span class="en">Effective 12 October 2026 · Last updated 12 October 2026</span></div>
+
+    <div class="intro">
+      <p class="th">เตือนใจเป็นผู้ช่วยจดรายรับรายจ่ายและเตือนความจำ ใช้งานผ่าน LINE (@528ggibx) และแอปเตือนใจ นโยบายนี้อธิบายว่าเราเก็บข้อมูลอะไร ใช้ทำอะไร เก็บไว้นานแค่ไหน และคุณมีสิทธิ์อะไรบ้างตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)</p>
+      <p class="en">Tuenjai is a money-logging and reminder assistant used through LINE (@528ggibx) and the Tuenjai app. This policy explains what we collect, why, how long we keep it, and your rights under Thailand's Personal Data Protection Act B.E. 2562 (PDPA).</p>
+      <p class="th"><span class="k">สรุปสั้นๆ:</span> เราเก็บเฉพาะสิ่งที่คุณพิมพ์ให้บอทจดหรือเตือน ไม่ขายข้อมูล และลบได้ทุกเมื่อด้วยการพิมพ์ <span class="cmd">ลบข้อมูลของฉัน</span></p>
+      <p class="en"><span class="k">In short:</span> we keep only what you type for the bot to log or remind, we never sell it, and you can erase it any time by typing <span class="cmd">delete my data</span>.</p>
+    </div>
+
+    <h2><span class="n">1</span><span class="th">ผู้ควบคุมข้อมูลส่วนบุคคล</span><span class="en">Data controller</span></h2>
+    <p class="th">ผู้ให้บริการเตือนใจเป็นผู้ควบคุมข้อมูลส่วนบุคคลของคุณ ติดต่อได้ที่อีเมลในข้อ 12</p>
+    <p class="en">The operator of Tuenjai is the controller of your personal data. Contact details are in section 12.</p>
+
+    <h2><span class="n">2</span><span class="th">ข้อมูลที่เราเก็บ</span><span class="en">Data we collect</span></h2>
+    <div class="tbl"><table>
+      <thead><tr><th class="th">ประเภท</th><th class="en">Type</th><th class="th">รายละเอียด</th><th class="en">Details</th></tr></thead>
+      <tbody>
+        <tr><td class="th">บัญชี LINE</td><td class="en">LINE account</td><td class="th">รหัสผู้ใช้ LINE (User ID) ภาษาที่เลือก เวลาที่คุณกดยอมรับนโยบาย และชื่อที่แสดงใน LINE (ใช้เฉพาะตอนชวนครอบครัว เพื่อบอกอีกฝ่ายว่าใครชวน)</td><td class="en">Your LINE user ID, chosen language, the time you accepted this policy, and your LINE display name (used only for family invites, so the other person knows who invited them).</td></tr>
+        <tr><td class="th">ข้อมูลที่คุณพิมพ์</td><td class="en">What you type</td><td class="th">รายการรายรับรายจ่าย (ชื่อรายการ จำนวนเงิน เวลา) ข้อความเตือนและเวลาเตือน โน้ต และบันทึกสมุดร้านค้า (ยอดขาย ต้นทุน)</td><td class="en">Money entries (title, amount, time), reminder text and times, notes, and shop-book records (sales, costs).</td></tr>
+        <tr><td class="th">ครอบครัว</td><td class="en">Family</td><td class="th">การเชื่อมระหว่างบัญชีของคุณกับคนในครอบครัวที่ยอมรับคำชวน ชื่อเรียกที่คุณตั้ง (เช่น "แม่") และสถานะว่ากดรับทราบการเตือนแล้วหรือยัง</td><td class="en">The link between you and family members who accepted your invite, the label you gave them (e.g. "Mom"), and whether they acknowledged a reminder.</td></tr>
+        <tr><td class="th">สมาชิกและชวนเพื่อน</td><td class="en">Membership and referrals</td><td class="th">แพ็กเกจ วันหมดอายุ การใช้สิทธิ์โปรโมชัน รหัสชวนเพื่อน และจำนวนเพื่อนที่สมัครผ่านรหัสของคุณ เราไม่เก็บเลขบัตรหรือข้อมูลบัญชีธนาคาร ผู้ให้บริการรับชำระเงินเป็นผู้ดูแลข้อมูลการชำระเงินเอง</td><td class="en">Your plan, expiry date, promotion use, referral code, and how many friends joined with it. We do not store card or bank details; the payment provider handles payment data.</td></tr>
+        <tr><td class="th">การเชื่อมแอป</td><td class="en">App link</td><td class="th">รหัสเชื่อมต่อที่เข้ารหัสทางเดียวแล้ว และข้อมูลที่ซิงก์ระหว่างแอปกับ LINE (รายการเงินและการเตือนประจำวัน)</td><td class="en">A one-way hashed connection token, and the data synced between the app and LINE (money entries and daily reminders).</td></tr>
+        <tr><td class="th">ข้อมูลทางเทคนิค</td><td class="en">Technical data</td><td class="th">ที่อยู่ IP ใช้ชั่วคราวในหน่วยความจำเพื่อกันการใช้งานผิดปกติ ไม่บันทึกถาวร และบันทึกการทำงานของระบบที่จำเป็นต่อการแก้ปัญหา</td><td class="en">IP addresses, held briefly in memory to block abuse and not stored, plus system logs needed to fix problems.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="th"><span class="k">ข้อมูลที่อยู่ในเครื่องของคุณเท่านั้น:</span> งบประมาณ กระปุกออม บัญชีและบัตร กระปุกเที่ยว และปฏิทินรอบเดือนในแอป เก็บไว้ในเครื่องที่คุณใช้ ไม่ถูกส่งมาที่เซิร์ฟเวอร์ของเรา ถ้าลบแอปหรือล้างข้อมูลเบราว์เซอร์ ข้อมูลส่วนนี้จะหายไปด้วย</p>
+    <p class="en"><span class="k">Stays on your device:</span> budgets, savings jars, accounts and cards, trip funds and the period calendar in the app are stored only on the device you use and are never sent to our server. Removing the app or clearing browser data erases them.</p>
+
+    <h2><span class="n">3</span><span class="th">ข้อมูลอ่อนไหว</span><span class="en">Sensitive data</span></h2>
+    <p class="th">ข้อความเตือนบางอย่างอาจเกี่ยวกับสุขภาพ เช่น "กินยา" เราใช้ข้อความนั้นเพื่อเตือนคุณเท่านั้น โดยอาศัยความยินยอมโดยชัดแจ้งที่คุณให้ตอนเริ่มใช้ ขอแนะนำว่าไม่ควรพิมพ์ชื่อโรคหรือชื่อยาที่ไม่อยากให้ใครรู้ และไม่ควรจดรหัสผ่าน รหัส OTP หรือเลขบัตรไว้ในโน้ต</p>
+    <p class="en">Some reminders may relate to health, such as "take medicine". We use that text only to remind you, based on the explicit consent you give when you start. Please avoid typing illnesses or medicines you want to keep private, and never store passwords, OTPs or card numbers in notes.</p>
+
+    <h2><span class="n">4</span><span class="th">เราใช้ข้อมูลเพื่ออะไร</span><span class="en">How we use your data</span></h2>
+    <ul>
+      <li class="th">จดและสรุปรายรับรายจ่าย ส่งการเตือนตามเวลาที่คุณตั้ง และส่งการเตือนให้คนในครอบครัวที่คุณชวน</li>
+      <li class="en">To log and summarise your money, send reminders at the times you set, and remind family members you invited.</li>
+      <li class="th">ดูแลแพ็กเกจสมาชิก ช่วงทดลองใช้ โปรโมชัน และส่วนลดชวนเพื่อน รวมถึงป้องกันการใช้สิทธิ์ทดลองซ้ำ</li>
+      <li class="en">To manage your plan, free trial, promotions and referral discounts, and to prevent repeated free trials.</li>
+      <li class="th">ซิงก์ข้อมูลกับแอปเตือนใจเมื่อคุณเชื่อมแอป และดูแลความปลอดภัยของระบบ</li>
+      <li class="en">To sync with the Tuenjai app when you link it, and to keep the service secure.</li>
+    </ul>
+    <p class="th">ฐานทางกฎหมายที่เราใช้ คือ ความจำเป็นเพื่อให้บริการตามที่คุณขอ (สัญญา) ความยินยอมของคุณ และประโยชน์โดยชอบด้วยกฎหมายในการดูแลความปลอดภัยของระบบ เราไม่ใช้ข้อมูลของคุณเพื่อโฆษณาและไม่ขายข้อมูลให้ใคร</p>
+    <p class="en">Our legal bases are performing the service you asked for (contract), your consent, and our legitimate interest in keeping the service secure. We do not use your data for advertising and we never sell it.</p>
+
+    <h2><span class="n">5</span><span class="th">การเปิดเผยข้อมูล</span><span class="en">Who we share data with</span></h2>
+    <ul>
+      <li class="th"><span class="k">LY Corporation (LINE)</span> ส่งข้อความระหว่างคุณกับบอท</li>
+      <li class="en"><span class="k">LY Corporation (LINE)</span>, to deliver messages between you and the bot.</li>
+      <li class="th"><span class="k">Render</span> ผู้ให้บริการเซิร์ฟเวอร์ที่ใช้เก็บข้อมูลและรันบอท</li>
+      <li class="en"><span class="k">Render</span>, the hosting provider that stores data and runs the bot.</li>
+      <li class="th"><span class="k">ผู้ให้บริการรับชำระเงิน</span> เมื่อคุณซื้อแพ็กเกจ</li>
+      <li class="en"><span class="k">Payment providers</span>, when you buy a plan.</li>
+      <li class="th">หน่วยงานรัฐ เมื่อกฎหมายกำหนดหรือมีคำสั่งศาล</li>
+      <li class="en">Authorities, when required by law or court order.</li>
+    </ul>
+    <p class="th">ลิงก์จองโรงแรม ตั๋ว และร้านค้าในแอปเป็นลิงก์พาร์ทเนอร์ เมื่อคุณกดออกไปที่เว็บเหล่านั้น การใช้ข้อมูลเป็นไปตามนโยบายของเว็บนั้นๆ เราได้รับเพียงค่าแนะนำ ไม่ได้รับข้อมูลส่วนตัวของคุณ</p>
+    <p class="en">Hotel, ticket and shop links in the app are partner links. Once you leave for those sites, their own policies apply. We may earn a referral fee but receive none of your personal data.</p>
+
+    <h2><span class="n">6</span><span class="th">การส่งข้อมูลไปต่างประเทศ</span><span class="en">Transfers abroad</span></h2>
+    <p class="th">เซิร์ฟเวอร์ของ Render ตั้งอยู่ในสหรัฐอเมริกา และ LINE อาจประมวลผลข้อมูลในญี่ปุ่นหรือประเทศอื่น เราเลือกผู้ให้บริการที่มีมาตรการคุ้มครองข้อมูลเหมาะสม และใช้การเชื่อมต่อแบบเข้ารหัส (HTTPS) ทุกครั้ง</p>
+    <p class="en">Render's servers are in the United States, and LINE may process data in Japan or elsewhere. We use providers with appropriate safeguards and encrypted (HTTPS) connections throughout.</p>
+
+    <h2><span class="n">7</span><span class="th">ระยะเวลาเก็บข้อมูล</span><span class="en">How long we keep data</span></h2>
+    <ul>
+      <li class="th">เก็บตลอดที่คุณใช้บริการ จนกว่าคุณจะพิมพ์ <span class="cmd">ลบข้อมูลของฉัน</span> ระบบจะลบรายการเงิน การเตือน โน้ต สมุดร้านค้า การเชื่อมครอบครัว และการเชื่อมแอปทันที</li>
+      <li class="en">For as long as you use the service, until you type <span class="cmd">delete my data</span>. Money entries, reminders, notes, shop records, family links and app links are then erased immediately.</li>
+      <li class="th">ถ้าคุณกด "ไม่ยอมรับ" ตอนเริ่มใช้ เราจะไม่เก็บข้อมูลใดๆ ของคุณ</li>
+      <li class="en">If you tap "Decline" at the start, we keep nothing about you.</li>
+      <li class="th">หลังลบข้อมูล เราเก็บไว้เพียงค่าแฮชทางเดียวของรหัสผู้ใช้ LINE ซึ่งย้อนกลับเป็นรหัสเดิมไม่ได้ พร้อมสถานะช่วงทดลองใช้และแพ็กเกจที่จ่ายแล้ว เพื่อป้องกันการใช้สิทธิ์ทดลองซ้ำ และคืนสิทธิ์ที่คุณจ่ายแล้วถ้าคุณกลับมาใช้อีก</li>
+      <li class="en">After erasure we keep only a one-way hash of your LINE user ID, which cannot be turned back into the ID, together with your trial and paid-plan status, to prevent repeat free trials and to restore what you paid for if you return.</li>
+      <li class="th">หลักฐานการชำระเงินเก็บตามระยะเวลาที่กฎหมายภาษีและบัญชีกำหนด</li>
+      <li class="en">Payment records are kept for the period tax and accounting law requires.</li>
+    </ul>
+
+    <h2><span class="n">8</span><span class="th">สิทธิของคุณ</span><span class="en">Your rights</span></h2>
+    <p class="th">ภายใต้ PDPA คุณมีสิทธิ์ขอเข้าถึงและขอสำเนาข้อมูล ขอแก้ไข ขอลบ ขอระงับการใช้ คัดค้านการประมวลผล ขอรับหรือโอนย้ายข้อมูล และถอนความยินยอมได้ทุกเมื่อ การถอนความยินยอมไม่กระทบการใช้ข้อมูลก่อนหน้านั้น</p>
+    <p class="en">Under the PDPA you may access and get a copy of your data, correct it, erase it, restrict its use, object to processing, receive or port it, and withdraw consent at any time. Withdrawing consent does not affect earlier processing.</p>
+    <ul>
+      <li class="th">ลบทุกอย่างเองได้ทันทีด้วยการพิมพ์ <span class="cmd">ลบข้อมูลของฉัน</span> ในแชต LINE</li>
+      <li class="en">Erase everything yourself at once by typing <span class="cmd">delete my data</span> in the LINE chat.</li>
+      <li class="th">คำขออื่นๆ ส่งมาที่อีเมลในข้อ 12 เราจะตอบภายใน 30 วัน</li>
+      <li class="en">Send other requests to the email in section 12. We reply within 30 days.</li>
+      <li class="th">ถ้าเห็นว่าเราไม่ปฏิบัติตามกฎหมาย คุณร้องเรียนสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (สคส.) ได้</li>
+      <li class="en">If you believe we broke the law, you may complain to Thailand's Personal Data Protection Committee (PDPC).</li>
+    </ul>
+
+    <h2><span class="n">9</span><span class="th">ความปลอดภัย</span><span class="en">Security</span></h2>
+    <p class="th">ข้อมูลส่งผ่านการเชื่อมต่อแบบเข้ารหัส รหัสเชื่อมแอปเก็บแบบแฮช ระบบจำกัดจำนวนครั้งที่เดารหัสได้ และมีเพียงผู้ดูแลระบบที่เข้าถึงฐานข้อมูลได้ ถ้าเกิดเหตุข้อมูลรั่วไหลที่กระทบคุณ เราจะแจ้ง สคส. และแจ้งคุณตามที่กฎหมายกำหนด</p>
+    <p class="en">Data travels over encrypted connections, app-link tokens are stored hashed, code guessing is rate-limited, and only the operator can access the database. If a breach affects you, we will notify the PDPC and you as the law requires.</p>
+
+    <h2><span class="n">10</span><span class="th">ผู้เยาว์</span><span class="en">Minors</span></h2>
+    <p class="th">ผู้ใช้ที่อายุต่ำกว่า 20 ปี ควรได้รับความยินยอมจากผู้ปกครองก่อนใช้งาน และก่อนซื้อแพ็กเกจสมาชิก</p>
+    <p class="en">Users under 20 should have a parent's or guardian's consent before using the service and before buying a plan.</p>
+
+    <h2><span class="n">11</span><span class="th">การเปลี่ยนแปลงนโยบาย</span><span class="en">Changes</span></h2>
+    <p class="th">เมื่อมีการเปลี่ยนแปลงสำคัญ เราจะแจ้งในแชต LINE ก่อนมีผลอย่างน้อย 7 วัน และปรับวันที่ด้านบนของหน้านี้</p>
+    <p class="en">For significant changes we will tell you in the LINE chat at least 7 days before they take effect, and update the date at the top of this page.</p>
+
+    <h2><span class="n">12</span><span class="th">ติดต่อเรา</span><span class="en">Contact</span></h2>
+    <div class="contact"><span class="th">อีเมล</span><span class="en">Email</span> <b id="mail">mathurot130813@gmail.com</b> <button class="copy" id="copy-mail" type="button"><span class="th">คัดลอก</span><span class="en">Copy</span></button></div>
+  </article>
+
+  <!-- ================= TERMS ================= -->
+  <article class="doc" id="terms" hidden>
+    <h1><span class="th">ข้อตกลงการใช้งาน</span><span class="en">Terms of Use</span></h1>
+    <div class="meta"><span class="th">มีผลตั้งแต่ 12 ตุลาคม 2569</span><span class="en">Effective 12 October 2026</span></div>
+    <div class="intro">
+      <p class="th">เมื่อคุณกด "ยอมรับ" ในแชต LINE หรือใช้แอปเตือนใจ ถือว่าคุณตกลงตามข้อตกลงนี้และนโยบายความเป็นส่วนตัว</p>
+      <p class="en">By tapping "I agree" in the LINE chat or using the Tuenjai app, you accept these terms and the Privacy Policy.</p>
+    </div>
+
+    <h2><span class="n">1</span><span class="th">บริการ</span><span class="en">The service</span></h2>
+    <p class="th">เตือนใจช่วยจดรายรับรายจ่าย สรุปยอด ตั้งเตือน จดโน้ต และมีเครื่องมือในแอป เช่น กระปุกออม กระปุกเที่ยว และปฏิทินรอบเดือน ข้อมูลและสรุปต่างๆ ใช้เพื่อช่วยจำเท่านั้น ไม่ใช่คำแนะนำทางการเงิน กฎหมาย หรือการแพทย์</p>
+    <p class="en">Tuenjai helps you log money, see totals, set reminders and keep notes, with app tools such as savings jars, trip funds and a period calendar. Everything it shows is a memory aid, not financial, legal or medical advice.</p>
+    <p class="th"><span class="k">ปฏิทินรอบเดือน</span>เป็นการคาดคะเนจากข้อมูลที่คุณบันทึก ไม่ใช่วิธีคุมกำเนิดและไม่ใช่การวินิจฉัยโรค หากมีข้อสงสัยเรื่องสุขภาพควรปรึกษาแพทย์</p>
+    <p class="en">The <span class="k">period calendar</span> is an estimate from what you record. It is not birth control and not a diagnosis. Ask a doctor about health concerns.</p>
+
+    <h2><span class="n">2</span><span class="th">การเตือน</span><span class="en">Reminders</span></h2>
+    <p class="th">เราพยายามส่งการเตือนตรงเวลา แต่การเตือนอาจล่าช้าหรือไม่ถึงได้ เช่น เมื่อ LINE หรือเซิร์ฟเวอร์ขัดข้อง หรืออินเทอร์เน็ตของคุณมีปัญหา อย่าใช้เตือนใจเป็นช่องทางเดียวสำหรับเรื่องเร่งด่วนหรือยาที่ต้องกินตรงเวลาอย่างเคร่งครัด</p>
+    <p class="en">We try to deliver reminders on time, but they can be late or missed, for example when LINE or our server is down or your connection fails. Do not rely on Tuenjai alone for urgent matters or time-critical medicine.</p>
+
+    <h2><span class="n">3</span><span class="th">แพ็กเกจและราคา</span><span class="en">Plans and prices</span></h2>
+    <div class="tbl"><table>
+      <thead><tr><th class="th">แพ็กเกจ</th><th class="en">Plan</th><th class="th">ราคา</th><th class="en">Price</th><th class="th">หมายเหตุ</th><th class="en">Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Free</td><td class="price">฿0</td><td class="th">จดเงินและสรุปได้ตลอด</td><td class="en">Money logging and totals, always</td></tr>
+        <tr><td class="th">ทดลองใช้</td><td class="en">Free trial</td><td class="price">฿0 · 7 <span class="th">วัน</span><span class="en">days</span></td><td class="th">ใช้ได้ทุกฟีเจอร์ของ Premium ครั้งเดียวต่อบัญชี LINE</td><td class="en">Every Premium feature, once per LINE account</td></tr>
+        <tr><td>Plus</td><td class="price">฿59 / <span class="th">เดือน</span><span class="en">month</span></td><td class="th">เตือนเด้งใน LINE และอื่นๆ ตามตารางในแอป</td><td class="en">LINE alerts and more, as listed in the app</td></tr>
+        <tr><td>Premium</td><td class="price">฿99 / <span class="th">เดือน</span><span class="en">month</span></td><td class="th">ทุกฟีเจอร์ รวมสมุดร้านค้าและเตือนครอบครัว</td><td class="en">Everything, including the shop book and family reminders</td></tr>
+        <tr><td class="th">โปรเปิดตัว</td><td class="en">Launch offer</td><td class="price">฿49 / <span class="th">เดือน</span><span class="en">month</span></td><td class="th">Plus สำหรับ 1,000 คนแรก นาน 3 เดือนนับจากวันที่ซื้อครั้งแรก จากนั้นเป็นราคาปกติ</td><td class="en">Plus for the first 1,000 buyers, for 3 months from first purchase, then the normal price</td></tr>
+        <tr><td class="th">ชวนเพื่อน</td><td class="en">Referral</td><td class="price"><span class="th">ลด</span><span class="en">−</span>฿20</td><td class="th">เพื่อน 1 คนที่สมัครสมาชิก = ลดเดือนถัดไป ฿20 (Plus ฿39, Premium ฿79) สูงสุด 12 เดือนต่อปี ใช้ร่วมกับโปรเปิดตัวไม่ได้</td><td class="en">Each friend who becomes a member = ฿20 off a later month (Plus ฿39, Premium ฿79), up to 12 months a year; cannot be combined with the launch offer</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li class="th">ชำระเป็นรายเดือน แพ็กเกจหมดอายุเองเมื่อครบกำหนด ไม่ต่ออายุอัตโนมัติ เว้นแต่จะแจ้งไว้ชัดเจนตอนชำระเงิน</li>
+      <li class="en">Plans are paid monthly and end on their expiry date. They do not renew automatically unless clearly stated at checkout.</li>
+      <li class="th">เมื่อแพ็กเกจหมดอายุ บัญชีกลับเป็น Free ข้อมูลที่จดไว้ยังอยู่ครบ</li>
+      <li class="en">When a plan ends, the account returns to Free and your records stay.</li>
+      <li class="th">ราคาอาจเปลี่ยนได้ โดยจะแจ้งล่วงหน้าอย่างน้อย 30 วัน และไม่กระทบช่วงเวลาที่คุณจ่ายไปแล้ว</li>
+      <li class="en">Prices may change with at least 30 days' notice, without affecting time you already paid for.</li>
+      <li class="th">ไม่คืนเงินสำหรับเดือนที่เริ่มใช้แล้ว ยกเว้นกรณีระบบของเราผิดพลาดหรือกฎหมายกำหนด</li>
+      <li class="en">No refunds for a month already started, except for errors on our side or where the law requires.</li>
+    </ul>
+
+    <h2><span class="n">4</span><span class="th">การใช้งานที่ไม่อนุญาต</span><span class="en">Acceptable use</span></h2>
+    <ul>
+      <li class="th">ใช้บอทส่งข้อความรบกวน หลอกลวง หรือคุกคามผู้อื่น รวมถึงชวนคนเข้าครอบครัวโดยที่เขาไม่ต้องการ</li>
+      <li class="en">Using the bot to spam, deceive or harass anyone, including family invites people do not want.</li>
+      <li class="th">พยายามเจาะระบบ เดารหัสของผู้อื่น หรือสร้างบัญชีหลายบัญชีเพื่อใช้สิทธิ์ทดลองหรือส่วนลดซ้ำ</li>
+      <li class="en">Attacking the service, guessing other people's codes, or making extra accounts to reuse trials or discounts.</li>
+      <li class="th">ใช้บริการในทางที่ผิดกฎหมาย</li>
+      <li class="en">Any unlawful use.</li>
+    </ul>
+    <p class="th">หากพบการใช้งานลักษณะนี้ เราอาจระงับสิทธิ์หรือยกเลิกบัญชีได้</p>
+    <p class="en">We may suspend or end access for such use.</p>
+
+    <h2><span class="n">5</span><span class="th">ลิงก์พาร์ทเนอร์</span><span class="en">Partner links</span></h2>
+    <p class="th">ลิงก์จองโรงแรม ตั๋ว และร้านค้าพาไปยังเว็บของบริษัทอื่น ราคาเท่ากับที่คุณซื้อเอง เราอาจได้ค่าแนะนำ การจองและการซื้อเป็นสัญญาระหว่างคุณกับเว็บนั้นโดยตรง</p>
+    <p class="en">Hotel, ticket and shop links lead to other companies' sites at the same price you would pay directly. We may earn a referral fee. Bookings and purchases are between you and that site.</p>
+
+    <h2><span class="n">6</span><span class="th">ทรัพย์สินทางปัญญา</span><span class="en">Intellectual property</span></h2>
+    <p class="th">ชื่อเตือนใจ น้องไก่ และการออกแบบแอปเป็นของผู้ให้บริการ ข้อมูลที่คุณจดเป็นของคุณ</p>
+    <p class="en">The Tuenjai name, the chick mascot and the app design belong to the operator. The records you create are yours.</p>
+
+    <h2><span class="n">7</span><span class="th">ความรับผิด</span><span class="en">Liability</span></h2>
+    <p class="th">เราให้บริการตามสภาพที่เป็นอยู่ เท่าที่กฎหมายอนุญาต เราไม่รับผิดต่อความเสียหายทางอ้อมจากการเตือนที่ล่าช้า ข้อมูลที่คุณพิมพ์ผิด หรือการตัดสินใจทางการเงินของคุณ ความรับผิดรวมของเราไม่เกินค่าบริการที่คุณจ่ายในช่วง 3 เดือนล่าสุด ข้อนี้ไม่จำกัดสิทธิ์ที่คุณมีตามกฎหมายคุ้มครองผู้บริโภค</p>
+    <p class="en">The service is provided as is. To the extent the law allows, we are not liable for indirect loss from late reminders, entries typed incorrectly, or your financial decisions, and our total liability is limited to what you paid in the last 3 months. This does not limit your rights under consumer protection law.</p>
+
+    <h2><span class="n">8</span><span class="th">การยกเลิก</span><span class="en">Ending the service</span></h2>
+    <p class="th">คุณเลิกใช้ได้ทุกเมื่อด้วยการบล็อกบัญชี LINE หรือพิมพ์ <span class="cmd">ลบข้อมูลของฉัน</span> ถ้าเราจะยุติบริการทั้งหมด จะแจ้งล่วงหน้าอย่างน้อย 30 วันและคืนเงินตามสัดส่วนเวลาที่เหลือ</p>
+    <p class="en">You can stop any time by blocking the LINE account or typing <span class="cmd">delete my data</span>. If we close the service, we will give at least 30 days' notice and refund unused paid time pro rata.</p>
+
+    <h2><span class="n">9</span><span class="th">กฎหมายที่ใช้บังคับ</span><span class="en">Governing law</span></h2>
+    <p class="th">ข้อตกลงนี้อยู่ภายใต้กฎหมายไทย ข้อพิพาทอยู่ในเขตอำนาจของศาลไทย</p>
+    <p class="en">These terms are governed by Thai law and Thai courts have jurisdiction.</p>
+
+    <h2><span class="n">10</span><span class="th">ติดต่อเรา</span><span class="en">Contact</span></h2>
+    <div class="contact"><span class="th">อีเมล</span><span class="en">Email</span> <b>mathurot130813@gmail.com</b></div>
+  </article>
+</main>
+
+<footer><span class="th">© 2569 เตือนใจ · LINE @528ggibx</span><span class="en">© 2026 Tuenjai · LINE @528ggibx</span></footer>
+
+<script>
+(function(){
+  var main=document.getElementById('top'), foot=document.querySelector('footer'), bar=document.querySelector('.bar');
+  function setLang(l){
+    [main,foot,bar].forEach(function(e){e.setAttribute('lang',l)});
+    document.documentElement.setAttribute('lang',l);
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.l===l))});
+    try{localStorage.setItem('tj_legal_lang',l)}catch(e){}
+  }
+  function show(d){
+    if(d!=='terms') d='privacy';
+    document.getElementById('privacy').hidden = d!=='privacy';
+    document.getElementById('terms').hidden = d!=='terms';
+    document.querySelectorAll('.tabs a').forEach(function(a){a.classList.toggle('on',a.dataset.d===d)});
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.l)})});
+  document.querySelectorAll('.tabs a').forEach(function(a){a.addEventListener('click',function(ev){ev.preventDefault();show(a.dataset.d);try{history.replaceState(null,'','#'+a.dataset.d)}catch(e){}window.scrollTo(0,0)})});
+  var l='th'; try{l=localStorage.getItem('tj_legal_lang')||'th'}catch(e){}
+  setLang(l==='en'?'en':'th');
+  show((location.hash||'').replace('#',''));
+  var btn=document.getElementById('copy-mail');
+  btn.addEventListener('click',function(){
+    var t=document.getElementById('mail').textContent;
+    var done=function(){btn.firstElementChild.textContent='คัดลอกแล้ว';btn.lastElementChild.textContent='Copied'};
+    try{navigator.clipboard.writeText(t).then(done,function(){selectMail()})}catch(e){selectMail()}
+  });
+  function selectMail(){var r=document.createRange();r.selectNodeContents(document.getElementById('mail'));var s=getSelection();s.removeAllRanges();s.addRange(r)}
+})();
+</script>
+
+</body>
+</html>
