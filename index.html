@@ -696,7 +696,7 @@ else if(d.sw){ST[d.sw]=!ST[d.sw];saveST();b.setAttribute("aria-checked",!!ST[d.s
 else if(d.tf){TF=d.tf;rTx()}
 else if(d.pl){PSEL=d.pl;rPlan()}
 else if(d.be!==undefined)openB();
-else if(d.buy!==undefined)toast(T("ระบบชำระเงินยังไม่เปิดในต้นแบบนี้ 🐥","Payments aren't connected in this prototype yet 🐥","此原型尚未开通付款 🐥","이 시제품에는 아직 결제가 연결되지 않았어요 🐥"));
+else if(d.buy!==undefined)location.href="https://line.me/R/oaMessage/%40528ggibx/?"+encodeURIComponent("สมัคร "+(d.buy=="prem"?"Premium":"Plus")+(PSEL=="y"?" รายปี":""));
 else if(d.reage!==undefined)$("ov").style.display="flex";
 else if(d.wipe!==undefined&&confirm(T("ลบข้อมูลทั้งหมดในเครื่องนี้? ย้อนกลับไม่ได้นะ","Delete all data on this device? This can't be undone.","删除此设备上的所有数据？此操作无法撤销。","이 기기의 모든 데이터를 삭제할까요? 되돌릴 수 없어요."))){["tj_tx","tj_rm","tj_bud","tj_set","tj_age","tj_cycle"].forEach(function(k){try{ls&&ls.removeItem(k)}catch(x){}});location.reload()}});
 
