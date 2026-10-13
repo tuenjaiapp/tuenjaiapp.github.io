@@ -1033,8 +1033,12 @@ careGrid("g1");careGrid("g2");careGrid("g3");careGrid("g4");careGrid("g5");careG
 <script>
 // ---------- friends challenge + family budget: shared by pasting codes, no server ----------
 var CH=ld("tj_chal")||[],FAM=ld("tj_fam")||null;
-function enc(o){return "TJ1:"+encodeURIComponent(JSON.stringify(o))}
-function dec(s){var m=String(s||"").match(/TJ1:(\S+)/);if(!m)return null;try{return JSON.parse(decodeURIComponent(m[1]))}catch(e){return null}}
+// Invites/summaries travel as a tappable link (…/?j=<base64url JSON>); old "TJ1:" codes still work.
+var APP_LINK="https://tuenjaiapp.github.io/";
+function b64u(str){var u=unescape(encodeURIComponent(str));return btoa(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function ub64(b){b=b.replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";return decodeURIComponent(escape(atob(b)))}
+function enc(o){return APP_LINK+"?j="+b64u(JSON.stringify(o))}
+function dec(s){s=String(s||"");var m=s.match(/[?&#]j=([A-Za-z0-9_-]+)/);if(m){try{return JSON.parse(ub64(m[1]))}catch(e){return null}}m=s.match(/TJ1:(\S+)/);if(!m)return null;try{return JSON.parse(decodeURIComponent(m[1]))}catch(e){return null}}
 function newCode(){var s="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",o="";for(var i=0;i<6;i++)o+=s[Math.floor(Math.random()*s.length)];return o}
 function nick(){return String(ST.name||"เพื่อน").slice(0,20)}
 function copyT(txt){
@@ -1155,11 +1159,11 @@ $("famc").addEventListener("click",function(e){
   }
   else if(b.hasAttribute("data-fsend")){
     var me=mineMonth();
-    sendT(T("สรุปเดือนนี้ของ","This month's summary for","本月摘要：","이번 달 요약:")+" "+nick()+" · "+T("ใช้ไป","spent","支出","지출")+" "+fmt(me.e)+(me.b?" / "+fmt(me.b):"")+"\n"+enc({t:"fm",c:FAM.c,n:nick(),mo:curMo(),i:me.i,e:me.e,b:me.b}));
+    sendT(T("สรุปเดือนนี้ของ","This month's summary for","本月摘要：","이번 달 요약:")+" "+nick()+" · "+T("ใช้ไป","spent","支出","지출")+" "+fmt(me.e)+(me.b?" / "+fmt(me.b):"")+"\n"+T("กดลิงก์เพื่อรวมยอดในแอป 👇","Tap to add it in the app 👇","点链接在应用中合并 👇","눌러서 앱에 합치기 👇")+"\n"+enc({t:"fm",c:FAM.c,n:nick(),mo:curMo(),i:me.i,e:me.e,b:me.b}));
     return;
   }
   else if(b.hasAttribute("data-finv")){
-    sendT(T("มาใช้บัญชีครอบครัวด้วยกัน","Join our family budget","一起用家庭账本","우리 가족 가계부에 참여해요")+' "'+FAM.n+'"\n'+enc({t:"fi",c:FAM.c,n:FAM.n}));
+    sendT(T("มาใช้บัญชีครอบครัวด้วยกัน","Join our family budget","一起用家庭账本","우리 가족 가계부에 참여해요")+' "'+FAM.n+'" 🐥\n'+T("กดลิงก์นี้เพื่อเข้าร่วม 👇","Tap to join 👇","点链接加入 👇","눌러서 참여하기 👇")+"\n"+enc({t:"fi",c:FAM.c,n:FAM.n}));
     return;
   }
   else if(b.hasAttribute("data-fimp")){
@@ -1177,6 +1181,13 @@ $("famc").addEventListener("click",function(e){
 });
 
 var _go6=go;go=function(t){_go6(t);if(t=="p-chal")rChal();if(t=="p-family")rFam()};
+
+// Opened from an invite/summary link: go to the right page with the message filled in.
+(function(){var m=/[?&]j=([A-Za-z0-9_-]+)/.exec(location.search);if(!m)return;var q=dec(location.search);try{history.replaceState(null,"",location.pathname)}catch(e){}if(!q)return;var link=enc(q);
+ setTimeout(function(){try{document.querySelectorAll(".ov").forEach(function(o){if(o.id!="due")o.style.display="none"})}catch(e){}
+  if(q.t=="fi"||q.t=="fm"){go("p-family");try{rFam()}catch(e){}var f=$(q.t=="fi"?"fj1":"fu1");if(f){f.value=link;f.scrollIntoView({block:"center"})}toast(q.t=="fi"?T("กด \"เข้าร่วม\" ได้เลยจ้า 👇","Tap \"Join\" 👇","点“加入” 👇","\"참여\"를 누르세요 👇"):T("กดรวมยอดได้เลยจ้า 👇","Tap to add the summary 👇","点合并摘要 👇","요약 합치기를 누르세요 👇"))}
+  else{go("p-chal");try{rChal()}catch(e){}var c=$("cj1");if(c){c.value=link;c.scrollIntoView({block:"center"})}toast(T("กดปุ่มด้านล่างได้เลยจ้า 👇","Tap the button below 👇","点下面的按钮 👇","아래 버튼을 누르세요 👇"))}
+ },700)})();
 </script>
 <script>
 // ---------- home: mood, egg farm, weekly letter, outfits, voice ----------
