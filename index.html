@@ -1684,7 +1684,9 @@ rShop();
 #tpk{position:fixed;inset:0;z-index:9999;background:rgba(20,30,36,.45);display:none;align-items:flex-end;justify-content:center}
 #tpk.on{display:flex}
 #tpk .tpb{background:var(--card);color:var(--ink);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:18px 16px calc(28px + env(safe-area-inset-bottom,0px));max-height:88vh;max-height:88dvh;overflow:auto;box-sizing:border-box}
-#tpk .tpv{display:block;width:62%;margin:0 auto;text-align:center;font:inherit;font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--ink);background:var(--bg);border:2px dashed var(--pinkd);border-radius:16px;padding:4px 0;box-sizing:border-box}
+#tpk .tprow{display:flex;gap:10px;align-items:center;justify-content:center}
+#tpk .tprow .tpst{width:56px;min-height:56px;font-size:30px;border-radius:50%;flex:none;color:var(--pinkd)}
+#tpk .tpv{display:block;width:100%;max-width:200px;margin:0;min-width:0;text-align:center;font:inherit;font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;color:var(--ink);background:var(--bg);border:2px dashed var(--pinkd);border-radius:16px;padding:4px 0;box-sizing:border-box}
 #tpk .tpv:focus{outline:none;border-style:solid}
 #tpk .tpt{text-align:center;font-size:13px;color:var(--sub);margin-top:6px}
 #tpk .tpl{text-align:center;color:var(--pinkd);font-size:20px;font-weight:700;margin:2px 0 10px;min-height:26px}
@@ -1692,14 +1694,14 @@ rShop();
 #tpk .tpg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 #tpk .tpg.m{grid-template-columns:repeat(4,1fr)}
 #tpk .tpg.q{grid-template-columns:repeat(3,1fr)}
-#tpk button{font:inherit;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;min-height:46px;font-size:18px;font-weight:700;padding:4px 2px;cursor:pointer}
+#tpk button{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;font:inherit;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;min-height:46px;font-size:18px;font-weight:700;padding:4px 2px;cursor:pointer}
 #tpk .q button{font-size:15px;line-height:1.25}
 #tpk button.sel{background:var(--pinkd);border-color:var(--pinkd);color:#fff}
 #tpk .tpa{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:16px}
 #tpk .tpa .ok{background:var(--pinkd);border-color:var(--pinkd);color:#fff;font-size:20px;min-height:54px}
 </style>
 <div id="tpk" role="dialog" aria-modal="true"><div class="tpb">
-<input class="tpv" id="tpv" value="08:00" inputmode="numeric" autocomplete="off" maxlength="5" aria-label="time"><div class="tpt" id="tpt"></div><div class="tpl" id="tpl"></div>
+<div class="tprow"><button type="button" class="tpst" data-st="-1" aria-label="-1 min">−</button><input class="tpv" id="tpv" value="08:00" inputmode="numeric" autocomplete="off" maxlength="5" aria-label="time"><button type="button" class="tpst" data-st="1" aria-label="+1 min">+</button></div><div class="tpt" id="tpt"></div><div class="tpl" id="tpl"></div>
 <div class="tph" id="tpq0"></div><div class="tpg q" id="tpq"></div>
 <div class="tph" id="tph0"></div><div class="tpg" id="tph"></div>
 <div class="tph" id="tpm0"></div><div class="tpg m" id="tpm"></div>
@@ -1715,7 +1717,7 @@ function thai(h,m){var mm=m?" "+m+" นาที":"",s;
  if(m===30&&h!==0&&h!==12)return s+"ครึ่ง";return s+mm}
 function word(h,m){var lab=L(thai(h,m),(h%12||12)+":"+p2(m)+(h<12?" AM":" PM"),(h<12?"上午 ":"下午 ")+(h%12||12)+":"+p2(m),(h<12?"오전 ":"오후 ")+(h%12||12)+":"+p2(m));return lab}
 var Q=[[7,0,"🌅","ตื่นนอน","Wake up","起床","기상"],[8,0,"🍚","หลังข้าวเช้า","After breakfast","早饭后","아침 식후"],[12,0,"☀️","เที่ยง","Noon","中午","점심"],[13,0,"🍱","หลังข้าวเที่ยง","After lunch","午饭后","점심 식후"],[18,0,"🌇","เย็น","Evening","傍晚","저녁"],[21,0,"🌙","ก่อนนอน","Bedtime","睡前","취침 전"]];
-var MS=[0,5,10,15,20,30,45,50];
+var MS=[0,5,10,15,20,25,30,35,40,45,50,55];
 function draw(keep){
  if(!keep)el("tpv").value=p2(H)+":"+p2(M);el("tpl").textContent=word(H,M);
  el("tpq").innerHTML=Q.map(function(q){return '<button type="button" data-q="'+q[0]+'"'+(q[0]===H&&q[1]===M?' class="sel"':'')+'>'+q[2]+' '+L(q[3],q[4],q[5],q[6])+'<br>'+p2(q[0])+':'+p2(q[1])+'</button>'}).join("");
@@ -1725,7 +1727,7 @@ function draw(keep){
 }
 function open(inp){cur=inp;var v=(inp.value||inp.defaultValue||"08:00").split(":");H=+v[0]||0;M=+v[1]||0;
  el("tpq0").textContent=L("เลือกเร็ว","Quick pick","快速选择","빠른 선택");el("tph0").textContent=L("ชั่วโมง (เช้า → ดึก)","Hour (morning → night)","小时（早 → 晚）","시 (아침 → 밤)");el("tpm0").textContent=L("นาที","Minutes","分钟","분");
- el("tpt").textContent=L("✏️ แตะช่องนี้เพื่อพิมพ์เวลาเอง เช่น 0745 หรือ 7.45","✏️ Tap to type a time, e.g. 0745 or 7.45","✏️ 点这里输入时间，如 0745 或 7.45","✏️ 눌러서 직접 입력, 예: 0745 또는 7.45");el("tpx").textContent=L("ยกเลิก","Cancel","取消","취소");el("tpo").textContent=L("ตกลง","OK","确定","확인");
+ el("tpt").textContent=L("✏️ แตะตัวเลขเพื่อพิมพ์เวลาเอง (เช่น 0745) หรือกด − / + ทีละ 1 นาที","✏️ Tap the time to type it (e.g. 0745), or use − / + for 1 minute","✏️ 点这里输入时间，如 0745 或 7.45","✏️ 눌러서 직접 입력, 예: 0745 또는 7.45");el("tpx").textContent=L("ยกเลิก","Cancel","取消","취소");el("tpo").textContent=L("ตกลง","OK","确定","확인");
  draw();el("tpk").classList.add("on")}
 function close(){el("tpk").classList.remove("on");cur=null;try{el("tpv").blur()}catch(e){}}
 function typed(v){var m=/^(\d{1,2})\s*[:.\s]\s*(\d{1,2})$/.exec(v.trim()),h,mi,d=v.replace(/\D/g,"");
@@ -1737,6 +1739,7 @@ el("tpv").addEventListener("blur",function(){if(el("tpk").classList.contains("on
 el("tpv").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();typed(this.value);el("tpo").click()}});
 el("tpk").addEventListener("click",function(e){var b=e.target.closest("button");if(e.target===el("tpk")){close();return}if(!b)return;var d=b.dataset;
  if(d.q!==undefined){var q=Q.filter(function(x){return x[0]==d.q})[0];H=q[0];M=q[1]}
+ else if(d.st!==undefined){var tm=(H*60+M+(+d.st)+1440)%1440;H=Math.floor(tm/60);M=tm%60}
  else if(d.h!==undefined)H=+d.h;else if(d.m!==undefined)M=+d.m;
  else if(b.id==="tpx"){close();return}
  else if(b.id==="tpo"){if(document.activeElement===el("tpv"))typed(el("tpv").value);var i=cur;close();if(i){i.value=p2(H)+":"+p2(M);i.dispatchEvent(new Event("input",{bubbles:true}));i.dispatchEvent(new Event("change",{bubbles:true}))}return}
