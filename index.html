@@ -1342,7 +1342,7 @@ var API_BASE="https://tuenjai-line-bot.onrender.com";
 function apiBase(){return (ST.apiBase||API_BASE||"").replace(/\/+$/,"")}
 function apiCall(m,path,body){return fetch(apiBase()+path,{method:m,headers:Object.assign({"content-type":"application/json"},ST.lineTok?{authorization:"Bearer "+ST.lineTok}:{}),body:body?JSON.stringify(body):undefined}).then(function(r){if(r.status==401){delete ST.lineTok;saveST();throw new Error("401")}return r.status==204?{}:r.json().then(function(j){if(!r.ok)throw new Error(j.error||r.status);return j})})}
 function applyMe(j){if(j.ref)ST.ref=j.ref;if(j.state=="active")ST.paid={t:j.tier,until:j.until};else delete ST.paid;ST.lineAlerts=!!j.lineAlerts;ST.lineTier=j.tier;saveST();try{prof()}catch(e){}}
-var srT=null;function syncRemSoon(){if(!ST.lineTok||!apiBase())return;clearTimeout(srT);srT=setTimeout(function(){apiCall("PUT","/api/reminders",{items:RM.map(function(r){return [r[0],r[1]]})}).then(applyMe).catch(function(e){console.log("sync",e.message)})},1500)}
+var srT=null;function syncRemSoon(){if(!ST.lineTok||!apiBase())return;clearTimeout(srT);srT=setTimeout(function(){apiCall("PUT","/api/reminders",{items:RM.map(function(r){return [r[0],r[1]]}).concat(window.clockRemItems?clockRemItems():[])}).then(applyMe).catch(function(e){console.log("sync",e.message)})},1500)}
 var _rr3=rrender;rrender=function(){_rr3();syncRemSoon()};
 function lineBox(){var b=apiBase(),h='<h2>'+T("เชื่อมกับ LINE","Connect LINE","连接 LINE","LINE 연결")+'</h2><div class="card" style="margin-top:0">';
 if(!b)h+='<p class="small" style="margin:0">'+T("ยังไม่ได้ตั้งที่อยู่เซิร์ฟเวอร์บอท เจ้าของแอปต้องใส่ API_BASE ก่อน","The bot server address isn't set yet (owner: set API_BASE)","尚未设置机器人服务器地址（请设置 API_BASE）","봇 서버 주소가 아직 없어요 (API_BASE 설정 필요)")+'</p>';
@@ -1764,6 +1764,148 @@ window.tpOpen=open;
   if(on&&!b){var c=card(),top=pg.querySelector(".top")||pg.querySelector("h1");if(top&&top.nextSibling)pg.insertBefore(c,top.nextSibling);else pg.insertBefore(c,pg.firstChild)}
   else if(!on&&b)b.remove()})}
  upd();setInterval(upd,2000);
+})();
+</script>
+<style>
+#clk{position:fixed;inset:0;z-index:9000;background:var(--bg);color:var(--ink);display:none;flex-direction:column;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));overflow:auto;box-sizing:border-box}
+#clk.on{display:flex}
+#clk .ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#clk .ch h1{flex:1;margin:0;font-size:26px;font-weight:800}
+#clk .cx{border:0;background:var(--card);color:var(--ink);width:44px;height:44px;border-radius:50%;font-size:20px;box-shadow:var(--shadow)}
+#clk .ctabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);padding:5px;border-radius:16px;box-shadow:var(--shadow)}
+#clk .ctabs button{border:0;background:none;color:var(--sub);font:inherit;font-weight:700;font-size:16px;padding:12px 4px;border-radius:12px}
+#clk .ctabs button.on{background:var(--pinkd);color:#fff}
+#clk .cbig{font-size:64px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px;margin:18px 0 4px;line-height:1.1}
+#clk .csub{text-align:center;color:var(--sub);min-height:22px}
+#clk .cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+#clk .cgrid button,#clk .cset button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:17px;border-radius:14px;min-height:50px}
+#clk .cset{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;text-align:center}
+#clk .cset .u{display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:16px;padding:8px;box-shadow:var(--shadow)}
+#clk .cset .u b{font-size:30px;font-variant-numeric:tabular-nums}
+#clk .cset .u small{color:var(--sub)}
+#clk .cact{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+#clk .cact button{font:inherit;font-weight:800;font-size:20px;border-radius:18px;min-height:60px;border:0}
+#clk .go{background:var(--pinkd);color:#fff}
+#clk .gr{background:var(--card);color:var(--ink);border:1.5px solid var(--line)!important}
+#clk .ring{width:220px;max-width:70vw;aspect-ratio:1;margin:10px auto 0;position:relative}
+#clk .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+#clk .ring .cbig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;font-size:46px}
+#clk .al{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:12px 14px;margin-top:10px;box-shadow:var(--shadow)}
+#clk .al .t{flex:1;min-width:0}
+#clk .al .t b{font-size:30px;font-variant-numeric:tabular-nums;display:block;line-height:1.1}
+#clk .al .t span{color:var(--sub);font-size:14px;overflow-wrap:anywhere}
+#clk .al.off .t{opacity:.45}
+#clk .sw{width:56px;height:32px;border-radius:16px;border:0;background:var(--line);position:relative;flex:none}
+#clk .sw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+#clk .sw.on{background:var(--pinkd)}#clk .sw.on::after{left:27px}
+#clk .del{border:0;background:none;color:var(--sub);font-size:18px;width:36px;height:36px}
+#clk .afm{background:var(--card);border-radius:18px;padding:14px;margin-top:12px;box-shadow:var(--shadow);display:grid;gap:10px}
+#clk .afm input{width:100%;box-sizing:border-box;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px;font:inherit;font-size:17px}
+#clk .afm input[type=time]{font-size:26px;font-weight:800;text-align:center}
+#clk .laps{margin-top:14px;display:grid;gap:6px}
+#clk .laps div{display:flex;justify-content:space-between;background:var(--card);border-radius:12px;padding:10px 14px;font-variant-numeric:tabular-nums}
+#clk .cnote{font-size:13px;color:var(--sub);margin-top:14px;line-height:1.5}
+#clr{position:fixed;inset:0;z-index:10000;background:var(--pinkd);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+#clr.on{display:flex}
+#clr .bell{font-size:84px;animation:clrs .5s ease-in-out infinite alternate}
+@keyframes clrs{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+#clr h2{font-size:32px;margin:0;color:#fff;font-weight:800}#clr p{font-size:20px;margin:0;opacity:.9}
+#clr button{font:inherit;font-weight:800;font-size:22px;border:0;border-radius:20px;min-height:64px;width:100%;max-width:320px;background:#fff;color:var(--pinkd)}
+#clr button.s{background:rgba(255,255,255,.18);color:#fff;font-size:18px;min-height:52px}
+</style>
+<div id="clk" role="dialog" aria-modal="true">
+ <div class="ch"><h1 id="clkh">⏰</h1><button class="cx" id="clkx" aria-label="close">✕</button></div>
+ <div class="ctabs" id="clkt"><button data-ct="timer"></button><button data-ct="alarm"></button><button data-ct="sw"></button></div>
+ <div id="clkb"></div>
+</div>
+<div id="clr" role="alertdialog"><div class="bell">⏰</div><h2 id="clrh"></h2><p id="clrp"></p><button id="clrok"></button><button class="s" id="clrsn"></button></div>
+<script>
+(function(){
+var L=function(){return (typeof T==="function")?T.apply(null,arguments):arguments[0]},el=function(i){return document.getElementById(i)};
+function g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function p(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function p2(n){return ("0"+n).slice(-2)}
+function hms(ms,cs){ms=Math.max(0,ms);var t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return (h?h+":"+p2(m):p2(m))+":"+p2(s)+(cs?"."+p2(Math.floor(ms%1000/10)):"")}
+// state
+var C=g("tj_clock")||{};C.tab=C.tab||"timer";C.al=C.al||[];C.tm=C.tm||{set:300000};C.sw=C.sw||{acc:0,laps:[]};
+function save(){p("tj_clock",C)}
+var tick=null,ringing=null;
+// sound: beeps through Web Audio (unlocked on the first tap anywhere)
+var AX=null;function ax(){try{if(!AX)AX=new (window.AudioContext||window.webkitAudioContext)();if(AX.state!=="running")AX.resume()}catch(e){}return AX}
+document.addEventListener("pointerdown",function u(){ax();document.removeEventListener("pointerdown",u,true)},true);
+var bt=null;function ringOn(){ringOff();var a=ax();function burst(){if(!a)return;var t0=a.currentTime;[0,.22,.44].forEach(function(d){var o=a.createOscillator(),v=a.createGain();o.type="sine";o.frequency.value=880;v.gain.setValueAtTime(0,t0+d);v.gain.linearRampToValueAtTime(.5,t0+d+.02);v.gain.linearRampToValueAtTime(0,t0+d+.18);o.connect(v);v.connect(a.destination);o.start(t0+d);o.stop(t0+d+.2)});try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(e){}}
+ burst();bt=setInterval(burst,1200)}
+function ringOff(){clearInterval(bt);bt=null;try{navigator.vibrate&&navigator.vibrate(0)}catch(e){}}
+function ring(title,sub,snooze){ringing={snooze:snooze};el("clrh").textContent=title;el("clrp").textContent=sub||"";el("clrok").textContent=L("หยุด","Stop","停止","끄기");el("clrsn").textContent=L("เลื่อนไป 5 นาที","Snooze 5 min","稍后 5 分钟","5분 후 다시");el("clrsn").hidden=!snooze;el("clr").classList.add("on");ringOn()}
+el("clrok").onclick=function(){ringOff();el("clr").classList.remove("on");ringing=null};
+el("clrsn").onclick=function(){var r=ringing;ringOff();el("clr").classList.remove("on");ringing=null;if(r&&r.snooze)r.snooze()};
+// wake lock while a timer runs
+var WL=null;function wake(on){try{if(on&&!WL&&navigator.wakeLock)navigator.wakeLock.request("screen").then(function(w){WL=w;w.addEventListener("release",function(){WL=null})}).catch(function(){});if(!on&&WL){WL.release();WL=null}}catch(e){}}
+// ---------- timer ----------
+var PRE=[1,3,5,10,15,20,30,60];
+function rTimer(){var tm=C.tm,run=tm.end&&!tm.pausedLeft,left=tm.end?tm.end-Date.now():(tm.pausedLeft||tm.set),tot=tm.total||tm.set,fr=tot?Math.max(0,Math.min(1,left/tot)):0,R=100,cir=2*Math.PI*R;
+ var h='<div class="ring"><svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="'+R+'" fill="none" stroke="var(--line)" stroke-width="12"/><circle id="tmarc" cx="110" cy="110" r="'+R+'" fill="none" stroke="var(--pinkd)" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+cir+'" stroke-dashoffset="'+(cir*(1-fr))+'"/></svg><div class="cbig" id="tmv">'+hms(left)+'</div></div>';
+ h+='<div class="csub" id="tmsub">'+(run?L("กำลังนับ… เปิดแอปไว้จะได้ยินเสียงเตือน","Counting… keep the app open to hear it","计时中… 请保持应用打开","카운트 중… 앱을 열어 두세요"):tm.pausedLeft?L("หยุดไว้ชั่วคราว","Paused","已暂停","일시정지"):"")+'</div>';
+ if(!tm.end&&!tm.pausedLeft){var m=Math.floor(tm.set/60000),hh=Math.floor(m/60),mm=m%60,ss=Math.floor(tm.set%60000/1000);
+  h+='<div class="cset">'+[["h",hh,L("ชั่วโมง","hours","小时","시간")],["m",mm,L("นาที","min","分钟","분")],["s",ss,L("วินาที","sec","秒","초")]].map(function(u){return '<div class="u"><button data-tu="'+u[0]+'" data-d="1">＋</button><b>'+p2(u[1])+'</b><small>'+u[2]+'</small><button data-tu="'+u[0]+'" data-d="-1">－</button></div>'}).join("")+'</div>';
+  h+='<div class="cgrid">'+PRE.map(function(n){return '<button data-tp="'+n+'">'+(n<60?n+" "+L("นาที","min","分","분"):"1 "+L("ชม.","hr","小时","시간"))+'</button>'}).join("")+'</div>';}
+ h+='<div class="cact">'+(tm.end||tm.pausedLeft?'<button class="gr" data-ta="reset">'+L("ล้าง","Reset","重置","초기화")+'</button>'+(run?'<button class="go" data-ta="pause">'+L("หยุดชั่วคราว","Pause","暂停","일시정지")+'</button>':'<button class="go" data-ta="resume">'+L("นับต่อ","Resume","继续","계속")+'</button>'):'<button class="gr" data-ta="zero">'+L("ตั้งใหม่","Clear","清零","지우기")+'</button><button class="go" data-ta="start">▶ '+L("เริ่ม","Start","开始","시작")+'</button>')+'</div>';
+ h+='<p class="cnote">'+L("💡 เปิดหน้าแอปไว้จะมีเสียงและสั่นเมื่อครบเวลา ถ้าปิดแอปหรือล็อกจอ มือถือบางรุ่นจะไม่ส่งเสียง","💡 Keep the app open to hear the alarm. Some phones stay silent when the app is closed or locked.","💡 保持应用打开才能听到提醒，部分手机锁屏后不会响。","💡 앱을 열어 두어야 소리가 나요. 잠금 상태에서는 울리지 않을 수 있어요.")+'</p>';
+ el("clkb").innerHTML=h}
+function tUpd(){var tm=C.tm;if(!tm.end||tm.pausedLeft)return;var left=tm.end-Date.now();
+ if(left<=0){tm.end=0;tm.pausedLeft=0;save();wake(false);ring(L("หมดเวลาแล้วจ้า","Time's up","时间到了","시간이 다 됐어요"),hms(tm.total||tm.set),null);if(C.tab=="timer"&&el("clk").classList.contains("on"))rTimer();return}
+ var v=el("tmv"),a=el("tmarc");if(v)v.textContent=hms(left+999);if(a){var cir=2*Math.PI*100;a.setAttribute("stroke-dashoffset",cir*(1-left/(tm.total||tm.set)))}}
+// ---------- alarm ----------
+var DAYS=function(){return [L("อา","Su","日","일"),L("จ","Mo","一","월"),L("อ","Tu","二","화"),L("พ","We","三","수"),L("พฤ","Th","四","목"),L("ศ","Fr","五","금"),L("ส","Sa","六","토")]};
+function rAlarm(){var h='<div class="afm"><input type="time" id="alt" value="'+(C.lastT||"07:00")+'"><input id="all" maxlength="40" placeholder="'+L("ชื่อ เช่น ตื่นนอน ไปรับลูก","Label, e.g. Wake up","名称，如 起床","이름, 예: 기상")+'"><button class="go" style="font:inherit;font-weight:800;font-size:18px;border:0;border-radius:14px;min-height:52px;background:var(--pinkd);color:#fff" data-aa="add">＋ '+L("เพิ่มนาฬิกาปลุก","Add alarm","添加闹钟","알람 추가")+'</button></div>';
+ if(!C.al.length)h+='<p class="csub" style="margin-top:18px">'+L("ยังไม่มีนาฬิกาปลุก","No alarms yet","还没有闹钟","알람이 없어요")+'</p>';
+ C.al.slice().sort(function(a,b){return a.t<b.t?-1:1}).forEach(function(a){var i=C.al.indexOf(a);h+='<div class="al'+(a.on?'':' off')+'"><div class="t"><b>'+a.t+'</b><span>'+(a.n?esc2(a.n)+' · ':'')+L("ทุกวัน","Every day","每天","매일")+'</span></div><button class="sw'+(a.on?' on':'')+'" data-as="'+i+'" aria-label="on/off"></button><button class="del" data-ad="'+i+'" aria-label="delete">✕</button></div>'});
+ var linked=window.ST&&ST.lineTok;
+ h+='<p class="cnote">'+(linked&&ST.lineAlerts?L("🔔 นาฬิกาปลุกที่เปิดไว้ จะเด้งเตือนใน LINE ด้วย แม้ปิดแอป","🔔 Alarms that are on also pop up in LINE, even with the app closed","🔔 开启的闹钟也会在 LINE 提醒，即使关闭应用","🔔 켜 둔 알람은 앱을 닫아도 LINE으로도 알려요"):L("💡 นาฬิกาปลุกจะดังเมื่อเปิดแอปไว้ สมาชิกที่เชื่อมกับ LINE จะได้รับแจ้งใน LINE ด้วยแม้ปิดแอป","💡 Alarms ring while the app is open. Members linked with LINE also get them in LINE.","💡 闹钟在应用打开时响铃。已连接 LINE 的会员也会在 LINE 收到。","💡 앱이 열려 있을 때 울려요. LINE에 연결한 회원은 LINE으로도 받아요."))+'</p>';
+ el("clkb").innerHTML=h}
+function esc2(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function aSync(){save();try{if(typeof syncRemSoon==="function")syncRemSoon()}catch(e){}}
+window.clockRemItems=function(){return C.al.filter(function(a){return a.on}).map(function(a){return ["⏰ "+(a.n||L("นาฬิกาปลุก","Alarm","闹钟","알람")),a.t]})};
+var lastK="";function aCheck(){var d=new Date(),hm=p2(d.getHours())+":"+p2(d.getMinutes()),k=d.toDateString()+hm;if(k===lastK)return;
+ C.al.forEach(function(a){if(a.on&&a.t===hm&&a.k!==k){a.k=k;save();lastK=k;ring("⏰ "+hm,a.n||L("นาฬิกาปลุก","Alarm","闹钟","알람"),function(){C.snz={at:Date.now()+300000,n:a.n};save()})}});
+ if(C.snz&&Date.now()>=C.snz.at){var n=C.snz.n;C.snz=null;save();ring("⏰ "+hm,n||L("นาฬิกาปลุก","Alarm","闹钟","알람"),function(){C.snz={at:Date.now()+300000,n:n};save()})}}
+// ---------- stopwatch ----------
+function swNow(){var s=C.sw;return s.acc+(s.st?Date.now()-s.st:0)}
+function rSw(){var s=C.sw,h='<div class="cbig" id="swv" style="margin-top:40px">'+hms(swNow(),1)+'</div><div class="csub"></div><div class="cact">';
+ h+=s.st?'<button class="gr" data-sa="lap">'+L("บันทึกรอบ","Lap","计圈","랩")+'</button><button class="go" data-sa="stop">'+L("หยุด","Stop","停止","정지")+'</button>':(s.acc?'<button class="gr" data-sa="reset">'+L("ล้าง","Reset","重置","초기화")+'</button><button class="go" data-sa="go">▶ '+L("ต่อ","Resume","继续","계속")+'</button>':'<button class="gr" disabled style="opacity:.4">'+L("บันทึกรอบ","Lap","计圈","랩")+'</button><button class="go" data-sa="go">▶ '+L("เริ่ม","Start","开始","시작")+'</button>');
+ h+='</div><div class="laps">'+s.laps.map(function(x,i){var prev=i?s.laps[i-1]:0;return '<div><span>'+L("รอบ","Lap","第","랩")+' '+(i+1)+'</span><span>+'+hms(x-prev,1)+'</span><b>'+hms(x,1)+'</b></div>'}).reverse().join("")+'</div>';
+ el("clkb").innerHTML=h}
+// ---------- shell ----------
+function rTabs(){var n={timer:L("⏳ นับถอยหลัง","⏳ Timer","⏳ 倒计时","⏳ 타이머"),alarm:L("⏰ ปลุก","⏰ Alarm","⏰ 闹钟","⏰ 알람"),sw:L("⏱️ จับเวลา","⏱️ Stopwatch","⏱️ 秒表","⏱️ 스톱워치")};
+ el("clkt").querySelectorAll("button").forEach(function(b){b.textContent=n[b.dataset.ct];b.classList.toggle("on",b.dataset.ct===C.tab)});el("clkh").textContent=L("นาฬิกา","Clock","时钟","시계")}
+function rAll(){rTabs();({timer:rTimer,alarm:rAlarm,sw:rSw})[C.tab]()}
+window.openClock=function(tab){if(tab)C.tab=tab;ax();el("clk").classList.add("on");rAll()};
+el("clkx").onclick=function(){el("clk").classList.remove("on")};
+el("clk").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var d=b.dataset,tm=C.tm,sw=C.sw;
+ if(d.ct){C.tab=d.ct;save();rAll();return}
+ if(d.tp){tm.set=+d.tp*60000;save();rTimer();return}
+ if(d.tu){var st={h:3600000,m:60000,s:5000}[d.tu]*(+d.d);tm.set=Math.max(0,Math.min(99*3600000,tm.set+st));save();rTimer();return}
+ if(d.ta=="zero"){tm.set=0;save();rTimer();return}
+ if(d.ta=="start"){if(!tm.set){return}tm.total=tm.set;tm.end=Date.now()+tm.set;tm.pausedLeft=0;save();wake(true);rTimer();return}
+ if(d.ta=="pause"){tm.pausedLeft=Math.max(1,tm.end-Date.now());tm.end=0;save();wake(false);rTimer();return}
+ if(d.ta=="resume"){tm.end=Date.now()+tm.pausedLeft;tm.pausedLeft=0;save();wake(true);rTimer();return}
+ if(d.ta=="reset"){tm.end=0;tm.pausedLeft=0;save();wake(false);rTimer();return}
+ if(d.aa=="add"){var t=el("alt").value||"07:00",n=el("all").value.trim().slice(0,40);C.lastT=t;C.al.push({t:t,n:n,on:true});aSync();rAlarm();try{toast(L("ตั้งปลุก "+t+" แล้วจ้า ⏰","Alarm set for "+t+" ⏰","已设闹钟 "+t+" ⏰",t+" 알람 설정 ⏰"))}catch(x){}return}
+ if(d.as!==undefined){var a=C.al[+d.as];if(a){a.on=!a.on;aSync();rAlarm()}return}
+ if(d.ad!==undefined){C.al.splice(+d.ad,1);aSync();rAlarm();return}
+ if(d.sa=="go"){sw.st=Date.now();save();rSw();return}
+ if(d.sa=="stop"){sw.acc=swNow();sw.st=0;save();rSw();return}
+ if(d.sa=="lap"){sw.laps.push(swNow());if(sw.laps.length>99)sw.laps.shift();save();rSw();return}
+ if(d.sa=="reset"){C.sw={acc:0,laps:[]};save();rSw();return}
+});
+setInterval(function(){tUpd();aCheck();if(C.tab=="sw"&&C.sw.st&&el("clk").classList.contains("on")){var v=el("swv");if(v)v.textContent=hms(swNow(),1)}},100);
+document.addEventListener("visibilitychange",function(){if(!document.hidden){tUpd();aCheck();if(C.tm.end&&!C.tm.pausedLeft)wake(true)}});
+// entry points: a tile in the care page and the search menu
+function addTile(){var nb=document.querySelector('#care .fc.f1');if(!nb||document.getElementById("clktile"))return;var b=document.createElement("button");b.className="fc f0";b.id="clktile";b.type="button";
+ b.innerHTML='<i><img data-chick alt="" class="fci"'+(window.CK?' src="'+CK+'"':'')+'><em>⏰</em></i><b>'+L("นาฬิกา","Clock","时钟","시계")+'</b><span>'+L("ปลุก นับถอยหลัง จับเวลา","Alarm, timer, stopwatch","闹钟、倒计时、秒表","알람·타이머·스톱워치")+'</span>';
+ b.addEventListener("click",function(e){e.stopPropagation();openClock()});nb.parentNode.appendChild(b)}
+addTile();setTimeout(addTile,1500);
+try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปลุก นับถอยหลัง จับเวลา","Alarm, timer, stopwatch","闹钟、倒计时、秒表","알람·타이머·스톱워치"],["ตั้งปลุก จับเวลาทำอาหาร","Wake-up alarm, cooking timer","起床闹钟、做饭计时","기상 알람·요리 타이머"],"นาฬิกา ปลุก นับถอยหลัง จับเวลา ตั้งเวลา timer alarm stopwatch clock 闹钟 计时 秒表 알람 타이머",function(){openClock()}])}}catch(e){}
 })();
 </script>
 </body></html>
