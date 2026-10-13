@@ -1908,4 +1908,22 @@ addTile();setTimeout(addTile,1500);
 try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปลุก นับถอยหลัง จับเวลา","Alarm, timer, stopwatch","闹钟、倒计时、秒表","알람·타이머·스톱워치"],["ตั้งปลุก จับเวลาทำอาหาร","Wake-up alarm, cooking timer","起床闹钟、做饭计时","기상 알람·요리 타이머"],"นาฬิกา ปลุก นับถอยหลัง จับเวลา ตั้งเวลา timer alarm stopwatch clock 闹钟 计时 秒表 알람 타이머",function(){openClock()}])}}catch(e){}
 })();
 </script>
+<script>
+// Inside LINE (opened from the menu through LIFF): sign in with LINE automatically, no code needed.
+(function(){
+ var inLine=/ Line\//i.test(navigator.userAgent)||/liff\./.test(location.search+location.hash);if(!inLine||!window.apiCall||!window.apiBase||!apiBase())return;
+ function load(src,cb){var x=document.createElement("script");x.src=src;x.onload=cb;x.onerror=function(){};document.head.appendChild(x)}
+ apiCall("GET","/api/config").then(function(c){if(!c||!c.liffId)return;
+  load("https://static.line-scdn.net/liff/edge/2/sdk.js",function(){if(!window.liff)return;
+   liff.init({liffId:c.liffId}).then(function(){
+    if(!liff.isLoggedIn()){if(liff.isInClient())liff.login();return}
+    var dt=liff.getDecodedIDToken(),sub=dt&&dt.sub?dt.sub.slice(-6):"";
+    if(ST.lineTok&&ST.lineSub===sub)return;
+    var tok=liff.getIDToken();if(!tok)return;
+    var old=ST.lineTok;delete ST.lineTok;
+    apiCall("POST","/api/liff",{idToken:tok}).then(function(j){ST.lineTok=j.token;ST.lineSub=j.sub||sub;applyMe(j);saveST();try{rSet()}catch(e){}if(typeof syncRemSoon==="function")syncRemSoon();SNAP={t:{},s:{},at:0};setTimeout(function(){syncNow()},300);toast(T("เชื่อมกับ LINE แล้วจ้า 🔗","Linked with LINE 🔗","已连接 LINE 🔗","LINE에 연결했어요 🔗"))})
+    .catch(function(e){if(old){ST.lineTok=old}if(String(e.message).indexOf("add the LINE")>=0)toast(T("เพิ่มเพื่อนน้องไก่ในไลน์ก่อนนะ","Add the Tuenjai LINE bot first","请先在 LINE 加提醒心为好友","먼저 LINE에서 튼짜이를 친구 추가하세요"))})
+   }).catch(function(e){console.log("liff",e&&e.message)})})}).catch(function(){})
+})();
+</script>
 </body></html>
