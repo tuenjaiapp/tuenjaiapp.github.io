@@ -1675,4 +1675,65 @@ document.addEventListener("click",function(e){var t=e.target.closest&&e.target.c
 document.addEventListener("input",function(e){if(e.target&&e.target.id==="shq"){SHOP_Q=e.target.value;rShopList()}});
 rShop();
 </script>
+<style>
+#tpk{position:fixed;inset:0;z-index:9999;background:rgba(20,30,36,.45);display:none;align-items:flex-end;justify-content:center}
+#tpk.on{display:flex}
+#tpk .tpb{background:var(--card);color:var(--ink);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;box-sizing:border-box}
+#tpk .tpv{text-align:center;font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+#tpk .tpl{text-align:center;color:var(--pinkd);font-size:20px;font-weight:700;margin:2px 0 10px;min-height:26px}
+#tpk .tph{font-size:15px;color:var(--sub);margin:12px 2px 6px;font-weight:700}
+#tpk .tpg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+#tpk .tpg.m{grid-template-columns:repeat(4,1fr)}
+#tpk .tpg.q{grid-template-columns:repeat(3,1fr)}
+#tpk button{font:inherit;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;min-height:46px;font-size:18px;font-weight:700;padding:4px 2px;cursor:pointer}
+#tpk .q button{font-size:15px;line-height:1.25}
+#tpk button.sel{background:var(--pinkd);border-color:var(--pinkd);color:#fff}
+#tpk .tpa{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:16px}
+#tpk .tpa .ok{background:var(--pinkd);border-color:var(--pinkd);color:#fff;font-size:20px;min-height:54px}
+</style>
+<div id="tpk" role="dialog" aria-modal="true"><div class="tpb">
+<div class="tpv" id="tpv">08:00</div><div class="tpl" id="tpl"></div>
+<div class="tph" id="tpq0"></div><div class="tpg q" id="tpq"></div>
+<div class="tph" id="tph0"></div><div class="tpg" id="tph"></div>
+<div class="tph" id="tpm0"></div><div class="tpg m" id="tpm"></div>
+<div class="tpa"><button type="button" id="tpx"></button><button type="button" class="ok" id="tpo"></button></div>
+</div></div>
+<script>
+(function(){
+var L=function(){return (typeof T==="function")?T.apply(null,arguments):arguments[0]};
+var cur=null,H=8,M=0,el=function(i){return document.getElementById(i)};
+function p2(n){return ("0"+n).slice(-2)}
+function thai(h,m){var mm=m?" "+m+" นาที":"",s;
+ if(h===0)s="เที่ยงคืน";else if(h<6)s="ตี "+h;else if(h<12)s=h+" โมงเช้า";else if(h===12)s="เที่ยงวัน";else if(h===13)s="บ่ายโมง";else if(h<16)s="บ่าย "+(h-12)+" โมง";else if(h<19)s=(h-12)+" โมงเย็น";else s=(h-18)+" ทุ่ม";
+ if(m===30&&h!==0&&h!==12)return s+"ครึ่ง";return s+mm}
+function word(h,m){var lab=L(thai(h,m),(h%12||12)+":"+p2(m)+(h<12?" AM":" PM"),(h<12?"上午 ":"下午 ")+(h%12||12)+":"+p2(m),(h<12?"오전 ":"오후 ")+(h%12||12)+":"+p2(m));return lab}
+var Q=[[7,0,"🌅","ตื่นนอน","Wake up","起床","기상"],[8,0,"🍚","หลังข้าวเช้า","After breakfast","早饭后","아침 식후"],[12,0,"☀️","เที่ยง","Noon","中午","점심"],[13,0,"🍱","หลังข้าวเที่ยง","After lunch","午饭后","점심 식후"],[18,0,"🌇","เย็น","Evening","傍晚","저녁"],[21,0,"🌙","ก่อนนอน","Bedtime","睡前","취침 전"]];
+var MS=[0,5,10,15,20,30,45,50];
+function draw(){
+ el("tpv").textContent=p2(H)+":"+p2(M);el("tpl").textContent=word(H,M);
+ el("tpq").innerHTML=Q.map(function(q){return '<button type="button" data-q="'+q[0]+'"'+(q[0]===H&&q[1]===M?' class="sel"':'')+'>'+q[2]+' '+L(q[3],q[4],q[5],q[6])+'<br>'+p2(q[0])+':'+p2(q[1])+'</button>'}).join("");
+ var h="";for(var i=0;i<24;i++){var k=(i+5)%24;h+='<button type="button" data-h="'+k+'"'+(k===H?' class="sel"':'')+'>'+p2(k)+'</button>'}el("tph").innerHTML=h;
+ var ms=MS.indexOf(M)<0?MS.concat([M]).sort(function(a,b){return a-b}):MS;
+ el("tpm").innerHTML=ms.map(function(m){return '<button type="button" data-m="'+m+'"'+(m===M?' class="sel"':'')+'>:'+p2(m)+'</button>'}).join("");
+}
+function open(inp){cur=inp;var v=(inp.value||inp.defaultValue||"08:00").split(":");H=+v[0]||0;M=+v[1]||0;
+ el("tpq0").textContent=L("เลือกเร็ว","Quick pick","快速选择","빠른 선택");el("tph0").textContent=L("ชั่วโมง (เช้า → ดึก)","Hour (morning → night)","小时（早 → 晚）","시 (아침 → 밤)");el("tpm0").textContent=L("นาที","Minutes","分钟","분");
+ el("tpx").textContent=L("ยกเลิก","Cancel","取消","취소");el("tpo").textContent=L("ตกลง","OK","确定","확인");
+ draw();el("tpk").classList.add("on")}
+function close(){el("tpk").classList.remove("on");cur=null}
+el("tpk").addEventListener("click",function(e){var b=e.target.closest("button");if(e.target===el("tpk")){close();return}if(!b)return;var d=b.dataset;
+ if(d.q!==undefined){var q=Q.filter(function(x){return x[0]==d.q})[0];H=q[0];M=q[1]}
+ else if(d.h!==undefined)H=+d.h;else if(d.m!==undefined)M=+d.m;
+ else if(b.id==="tpx"){close();return}
+ else if(b.id==="tpo"){var i=cur;close();if(i){i.value=p2(H)+":"+p2(M);i.dispatchEvent(new Event("input",{bubbles:true}));i.dispatchEvent(new Event("change",{bubbles:true}))}return}
+ draw()});
+function fix(r){(r.querySelectorAll?r:document).querySelectorAll('input[type="time"]:not([data-tp])').forEach(function(i){i.setAttribute("data-tp","1");i.readOnly=true;i.setAttribute("inputmode","none");i.style.cursor="pointer"})}
+fix(document);
+try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.matches&&n.matches('input[type="time"]'))fix(n.parentNode||document);else fix(n)}})})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+function hit(e){var i=e.target;if(i&&i.matches&&i.matches('input[type="time"]')){e.preventDefault();if(e.type==="click")open(i)}}
+document.addEventListener("click",hit,true);document.addEventListener("mousedown",hit,true);
+document.addEventListener("keydown",function(e){var i=e.target;if(i&&i.matches&&i.matches('input[type="time"]')&&(e.key==="Enter"||e.key===" ")){e.preventDefault();open(i)}if(e.key==="Escape"&&cur)close()},true);
+window.tpOpen=open;
+})();
+</script>
 </body></html>
