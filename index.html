@@ -1365,7 +1365,7 @@ function shRec(t){return {id:t.id,kind:t.k,title:t.n,qty:t.q||1,amount:t.a,cost:
 function fp(o){return JSON.stringify([o.title,o.amount,o.ts,o.cat||null,o.kind||null,o.qty||null,o.cost==null?null:o.cost])}
 function diff(list,map,rec){var out=[],seen={};list.forEach(function(x){var r=rec(x);seen[r.id]=1;if(map[r.id]!==fp(r))out.push(r)});Object.keys(map).forEach(function(id){if(!seen[id])out.push({id:id,del:1})});return out}
 function syncSoon(ms){if(!ST.lineTok||!apiBase())return;clearTimeout(syT);syT=setTimeout(syncNow,ms==null?2500:ms)}
-(function(){var m=/^#c=(\d{6})$/.exec(location.hash||"");if(!m)return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+(function(){var m=/^#c=(\d{6})$/.exec(location.hash||"");if(!m)return;try{history.replaceState(null,"",location.pathname)}catch(e){}
  if(ST.lineTok||!apiBase())return;
  apiCall("POST","/api/link",{code:m[1],quiet:true}).then(function(j){ST.lineTok=j.token;applyMe(j);saveST();try{rSet()}catch(e){}if(typeof syncRemSoon==="function")syncRemSoon();SNAP={t:{},s:{},at:0};setTimeout(function(){syncNow()},300);toast(T("เชื่อมกับ LINE แล้วจ้า 🔗 รายการจากไลน์กำลังมา","Linked with LINE 🔗 Loading your entries","已连接 LINE 🔗 正在载入记录","LINE에 연결했어요 🔗 기록을 불러오는 중"))}).catch(function(e){toast(T("ลิงก์หมดอายุ กด \"เปิดแอป\" ในไลน์อีกครั้งนะ","Link expired. Tap \"Open app\" in LINE again","链接已过期，请在 LINE 再点一次“打开应用”","링크가 만료됐어요. LINE에서 \"앱 열기\"를 다시 눌러 주세요"))})})();
 function syncNow(){if(syBusy||!ST.lineTok||!apiBase())return;syBusy=true;
@@ -1739,6 +1739,19 @@ function hit(e){var i=e.target;if(i&&i.matches&&i.matches('input[type="time"]'))
 document.addEventListener("click",hit,true);document.addEventListener("mousedown",hit,true);
 document.addEventListener("keydown",function(e){var i=e.target;if(i&&i.matches&&i.matches('input[type="time"]')&&(e.key==="Enter"||e.key===" ")){e.preventDefault();open(i)}if(e.key==="Escape"&&cur)close()},true);
 window.tpOpen=open;
+})();
+</script>
+<script>
+// Not linked with LINE yet: show a one-tap way to get the personal open-app link from the bot.
+(function(){
+ var u="https://line.me/R/oaMessage/%40528ggibx/?"+encodeURIComponent("เชื่อมแอป");
+ function card(){var d=document.createElement("a");d.className="lnkbar";d.href=u;d.target="_blank";d.rel="noopener";
+  d.style.cssText="display:flex;gap:10px;align-items:center;margin:10px 0 4px;padding:12px 14px;border-radius:16px;background:var(--butter);color:var(--butterd);text-decoration:none;font-weight:700;line-height:1.35;border:1.5px solid rgba(154,103,0,.25)";
+  d.innerHTML='<span style="font-size:26px">🔗</span><span style="flex:1">'+T("ดึงข้อมูลจาก LINE มาที่แอป","Bring your LINE entries into the app","把 LINE 里的记录同步到应用","LINE 기록을 앱으로 가져오기")+'<br><small style="font-weight:500">'+T("แตะที่นี่ แล้วกดปุ่ม \"เปิดแอป\" ที่น้องไก่ส่งให้ในแชต","Tap here, then tap \"Open app\" in the chat","点这里，然后在聊天中点“打开应用”","여기를 누른 뒤 채팅의 \"앱 열기\"를 누르세요")+'</small></span><span>›</span>';return d}
+ function upd(){var on=!(window.ST&&ST.lineTok);["home","me"].forEach(function(id){var pg=document.getElementById(id);if(!pg)return;var b=pg.querySelector(".lnkbar");
+  if(on&&!b){var c=card(),top=pg.querySelector(".top")||pg.querySelector("h1");if(top&&top.nextSibling)pg.insertBefore(c,top.nextSibling);else pg.insertBefore(c,pg.firstChild)}
+  else if(!on&&b)b.remove()})}
+ upd();setInterval(upd,2000);
 })();
 </script>
 </body></html>
