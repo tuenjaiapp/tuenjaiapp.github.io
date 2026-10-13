@@ -910,13 +910,13 @@ function rNote(){
   var h='<div class="say">'+chick()+'<div class="bub">'+T("เขียนไว้ให้เตือนใจช่วยจำ 📒","Write it down and I'll help you remember 📒","写下来，我帮你记住 📒","적어 두면 제가 기억할게요 📒")+'</div></div>';
   h+='<div class="card fm"><input id="pn_t" maxlength="120" autocomplete="off" placeholder="'+T("เช่น ไซส์รองเท้า 39, ที่จอดรถชั้น B2","e.g. Shoe size 39, parking B2","例如：鞋码39，停车位B2","예: 신발 240, 주차 B2")+'"><button class="btn" data-nadd>'+T("เพิ่มในสมุด","Add to notebook","添加到备忘本","메모 추가")+'</button></div>';
   if(!NOTE.length)h+='<p class="note">'+T("ยังไม่มีบันทึก","Nothing saved yet","还没有记录","아직 메모가 없어요")+'</p>';
-  NOTE.forEach(function(x,i){h+='<div class="card note-row"><span>'+esc(x.t)+'</span><button class="xbtn" data-ndel="'+i+'" aria-label="ลบ">✕</button></div>'});
+  NOTE.forEach(function(x,i){h+='<div class="card note-row"><span>'+(x.l?'<small style="color:var(--mintd);font-weight:700">💬 LINE</small> ':'')+esc(x.t)+'</span><button class="xbtn" data-ndel="'+i+'" aria-label="ลบ">✕</button></div>'});
   $("notec").innerHTML=h;
 }
 $("notec").addEventListener("click",function(e){
   var b=e.target.closest("[data-nadd],[data-ndel]");if(!b)return;
   if(b.hasAttribute("data-nadd")){var v=$("pn_t").value.trim();if(!v){toast(T("พิมพ์อะไรสักอย่างก่อนนะ","Type something first","先写点什么吧","먼저 내용을 적어 주세요"));return}NOTE.unshift({t:v})}
-  else NOTE.splice(+b.dataset.ndel,1);
+  else{var gx=NOTE[+b.dataset.ndel];if(gx&&gx.l){ST.noteDel=(ST.noteDel||[]).concat([gx.l]);saveST();if(typeof syncSoon==="function")syncSoon(500)}NOTE.splice(+b.dataset.ndel,1)}
   sv("tj_note",NOTE);rNote();
 });
 
@@ -1365,9 +1365,12 @@ function shRec(t){return {id:t.id,kind:t.k,title:t.n,qty:t.q||1,amount:t.a,cost:
 function fp(o){return JSON.stringify([o.title,o.amount,o.ts,o.cat||null,o.kind||null,o.qty||null,o.cost==null?null:o.cost])}
 function diff(list,map,rec){var out=[],seen={};list.forEach(function(x){var r=rec(x);seen[r.id]=1;if(map[r.id]!==fp(r))out.push(r)});Object.keys(map).forEach(function(id){if(!seen[id])out.push({id:id,del:1})});return out}
 function syncSoon(ms){if(!ST.lineTok||!apiBase())return;clearTimeout(syT);syT=setTimeout(syncNow,ms==null?2500:ms)}
+(function(){var m=/^#c=(\d{6})$/.exec(location.hash||"");if(!m)return;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
+ if(ST.lineTok||!apiBase())return;
+ apiCall("POST","/api/link",{code:m[1],quiet:true}).then(function(j){ST.lineTok=j.token;applyMe(j);saveST();try{rSet()}catch(e){}if(typeof syncRemSoon==="function")syncRemSoon();SNAP={t:{},s:{},at:0};setTimeout(function(){syncNow()},300);toast(T("เชื่อมกับ LINE แล้วจ้า 🔗 รายการจากไลน์กำลังมา","Linked with LINE 🔗 Loading your entries","已连接 LINE 🔗 正在载入记录","LINE에 연결했어요 🔗 기록을 불러오는 중"))}).catch(function(e){toast(T("ลิงก์หมดอายุ กด \"เปิดแอป\" ในไลน์อีกครั้งนะ","Link expired. Tap \"Open app\" in LINE again","链接已过期，请在 LINE 再点一次“打开应用”","링크가 만료됐어요. LINE에서 \"앱 열기\"를 다시 눌러 주세요"))})})();
 function syncNow(){if(syBusy||!ST.lineTok||!apiBase())return;syBusy=true;
 tx.forEach(function(t){if(!t[5])t[5]=nid()});ST2.tx.forEach(function(t){if(!t.id)t.id=nid()});
-var shopOn=tierIx()==2,body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[]};
+var shopOn=tierIx()==2,body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};
 apiCall("POST","/api/sync",body).then(function(j){applyMe(j);
  body.tx.forEach(function(r){if(r.del)delete SNAP.t[r.id];else SNAP.t[r.id]=fp(r)});
  if(j.shopSynced)body.shop.forEach(function(r){if(r.del)delete SNAP.s[r.id];else SNAP.s[r.id]=fp(r)});
@@ -1381,6 +1384,8 @@ apiCall("POST","/api/sync",body).then(function(j){applyMe(j);
   var en={id:r.id,k:r.kind,n:r.title,q:r.qty,p:r.qty?r.amount/r.qty:r.amount,c:r.cost,a:r.amount,d:r.ts};
   SNAP.s[r.id]=fp(shRec(en));if(i!=null)ST2.tx[i]=en;else ST2.tx.push(en);chs=true});
  if(chs){ST2.tx=ST2.tx.filter(function(t){return t});svStore()}
+ if(body.noteDel.length)ST.noteDel=(ST.noteDel||[]).filter(function(x){return body.noteDel.indexOf(x)<0});
+ if(j.notes&&typeof NOTE!=="undefined"){var gone=ST.noteDel||[],ln=j.notes.filter(function(n){return gone.indexOf(n.id)<0}).map(function(n){return{t:n.t,l:n.id,ts:n.ts}}),loc=NOTE.filter(function(x){return!x.l}),nn=ln.concat(loc);if(JSON.stringify(nn)!==JSON.stringify(NOTE)){NOTE.length=0;nn.forEach(function(x){NOTE.push(x)});sv("tj_note",NOTE);try{rNote()}catch(e){}}}
  SNAP.at=j.now;sv("tj_snap",SNAP);
  if(ch){syncing=true;render();syncing=false}
  if(chs){var p=document.querySelector(".page.on");if(p&&p.id=="p-shop")rStore()}
