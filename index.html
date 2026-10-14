@@ -1956,4 +1956,9 @@ try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปล
  }}catch(e){}
 })();
 </script>
+<script>
+// Any chick image added after start-up (re-rendered tiles, new pages) gets the mascot picture too.
+(function(){function fill(r){(r.querySelectorAll?r:document).querySelectorAll('img[data-chick]').forEach(function(i){if(window.CK&&i.getAttribute("src")!==CK)i.src=CK})}
+ fill(document);try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.matches&&n.matches('img[data-chick]'))fill(n.parentNode||document);else fill(n)}})})}).observe(document.body,{childList:true,subtree:true})}catch(e){}})();
+</script>
 </body></html>
