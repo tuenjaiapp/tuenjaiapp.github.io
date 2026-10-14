@@ -997,7 +997,7 @@ $("cardc").addEventListener("click",function(e){
   if(b.hasAttribute("data-cadd")){var n=$("pc_n").value.trim(),v=+$("pc_b").value||0,d=Math.floor(+$("pc_d").value);if(!n||!(d>=1&&d<=31)){toast(T("ใส่ชื่อบัตรและวันครบกำหนด (1–31) ก่อนนะ","Enter a card name and due day (1–31)","请输入卡名和还款日（1–31）","카드 이름과 결제일(1–31)을 입력하세요"));return}if(!canAdd("acc",ACC.length+CARD.length))return;CARD.push({n:n,b:v,d:d})}
   else if(b.hasAttribute("data-cpay"))CARD[+b.dataset.cpay].b=0;
   else CARD.splice(+b.dataset.cdel,1);
-  sv("tj_card",CARD);rCard();
+  sv("tj_card",CARD);rCard();if(window.syncRemSoon)syncRemSoon();
 });
 
 // Debts and payoff plan
@@ -1005,21 +1005,24 @@ function rDebt(){
   $("debtH").textContent=T("หนี้สิน","Debts","债务","부채");
   var rem=DEBT.reduce(function(s,x){return s+(+x.r||0)},0);
   var h='<div class="card"><div class="kv" style="margin:0"><span>'+T("หนี้คงเหลือรวม","Total remaining","剩余债务合计","남은 부채 합계")+'</span></div><div class="big" data-nt>'+fmt(rem)+'</div></div>';
-  h+='<div class="card fm"><input id="pd_n" maxlength="40" autocomplete="off" placeholder="'+T("เช่น ผ่อนรถ, สินเชื่อส่วนบุคคล","e.g. Car loan, Personal loan","例如：车贷、个人贷款","예: 자동차 할부, 신용대출")+'"><input id="pd_r" type="number" min="1" inputmode="decimal" placeholder="'+T("ยอดคงเหลือ (บาท)","Remaining (THB)","剩余金额（泰铢）","남은 금액 (바트)")+'"><input id="pd_p" type="number" min="1" inputmode="decimal" placeholder="'+T("จ่ายต่อเดือน (บาท)","Monthly payment (THB)","每月还款（泰铢）","월 상환액 (바트)")+'"><button class="btn" data-dadd>'+T("เพิ่มหนี้","Add debt","添加债务","부채 추가")+'</button></div>';
+  h+='<div class="card fm"><input id="pd_n" maxlength="40" autocomplete="off" placeholder="'+T("เช่น ผ่อนรถ, สินเชื่อส่วนบุคคล","e.g. Car loan, Personal loan","例如：车贷、个人贷款","예: 자동차 할부, 신용대출")+'"><input id="pd_r" type="number" min="1" inputmode="decimal" placeholder="'+T("ยอดคงเหลือ (บาท)","Remaining (THB)","剩余金额（泰铢）","남은 금액 (바트)")+'"><input id="pd_p" type="number" min="1" inputmode="decimal" placeholder="'+T("จ่ายต่อเดือน (บาท)","Monthly payment (THB)","每月还款（泰铢）","월 상환액 (바트)")+'"><input id="pd_d" type="number" min="1" max="31" inputmode="numeric" placeholder="'+T("วันที่ต้องจ่ายทุกเดือน (1–31)","Due day each month (1–31)","每月还款日（1–31）","매월 납부일 (1–31)")+'"><p class="small" style="margin:4px 2px 8px">🔔 '+T("ใส่วันที่จ่าย น้องไก่จะเตือนก่อน 3 วัน และวันครบกำหนดตอน 9 โมง (ถ้าเชื่อมไลน์ จะเด้งในไลน์ด้วย)","Add the due day and I'll remind you 3 days before and on the day at 9:00 (also on LINE if linked)","填写还款日，提前 3 天和当天 9 点提醒（连接 LINE 也会推送）","납부일을 넣으면 3일 전과 당일 9시에 알려드려요 (LINE 연결 시 LINE으로도)")+'</p><button class="btn" data-dadd>'+T("เพิ่มหนี้","Add debt","添加债务","부채 추가")+'</button></div>';
   DEBT.forEach(function(x,i){
-    var months=Math.ceil(x.r/x.p);
-    h+='<div class="card"><div class="kv" style="margin:0"><b style="color:var(--ink);font-size:15px">'+esc(x.n)+'</b><b data-nt>'+fmt(x.r)+'</b></div>'
-      +(x.r>0?'<div class="kv"><span>'+T("จ่ายเดือนละ "+fmt(x.p)+" · ประมาณ "+months+" เดือนหมด","Pay "+fmt(x.p)+" a month · about "+months+" months to clear","每月还 "+fmt(x.p)+" · 约 "+months+" 个月还清","월 "+fmt(x.p)+" 상환 · 약 "+months+"개월 후 완납")+'</span></div><div class="jrow"><button class="btn" data-dpay="'+i+'" style="margin:0">'+T("จ่ายเดือนนี้แล้ว","Paid this month","本月已还","이번 달 상환 완료")+'</button></div>':'<div class="kv"><span>'+T("ปิดหนี้แล้ว 🎉","Paid off 🎉","已还清 🎉","상환 완료 🎉")+'</span></div>')
+    var hasR=+x.r>0,months=hasR&&x.p?Math.ceil(x.r/x.p):0,paidM=x.pm===mKey(Date.now()),k=x.d?daysUntil(x.d):null;
+    var dueTxt=x.d?(paidM?'✅ '+T("เดือนนี้จ่ายแล้ว · ","Paid this month · ","本月已还 · ","이번 달 납부 완료 · "):'')+'📅 '+T("จ่ายทุกวันที่ "+x.d,"Due on day "+x.d,"每月 "+x.d+" 日","매월 "+x.d+"일")+(paidM?'':' · '+(k==0?T("วันนี้!","today!","今天！","오늘!"):T("อีก "+k+" วัน","in "+k+" days","还有 "+k+" 天",k+"일 후"))):'';
+    h+='<div class="card"><div class="kv" style="margin:0"><b style="color:var(--ink);font-size:15px">'+esc(x.n)+'</b><b data-nt>'+(hasR?fmt(x.r):(x.p?fmt(x.p)+T("/เดือน","/mo","/月","/월"):''))+'</b></div>'
+      +(dueTxt?'<div class="kv"><span style="color:'+(!paidM&&k!=null&&k<=3?'#E0604B':'inherit')+'">'+dueTxt+' 🔔</span></div>':'<div class="jrow"><input id="pd_dd'+i+'" type="number" min="1" max="31" inputmode="numeric" placeholder="'+T("วันที่จ่าย (1–31)","Due day (1–31)","还款日","납부일")+'" style="margin:0"><button class="btn" data-dday="'+i+'" style="margin:0;width:auto;padding:8px 14px">🔔 '+T("ตั้งเตือน","Remind me","提醒我","알림")+'</button></div>')
+      +(hasR||x.r==null||x.r===""?(months?'<div class="kv"><span>'+T("จ่ายเดือนละ "+fmt(x.p)+" · ประมาณ "+months+" เดือนหมด","Pay "+fmt(x.p)+" a month · about "+months+" months to clear","每月还 "+fmt(x.p)+" · 约 "+months+" 个月还清","월 "+fmt(x.p)+" 상환 · 약 "+months+"개월 후 완납")+'</span></div>':'')+(paidM?'':'<div class="jrow"><button class="btn" data-dpay="'+i+'" style="margin:0">'+T("จ่ายเดือนนี้แล้ว","Paid this month","本月已还","이번 달 상환 완료")+'</button></div>'):'<div class="kv"><span>'+T("ปิดหนี้แล้ว 🎉","Paid off 🎉","已还清 🎉","상환 완료 🎉")+'</span></div>')
       +'<button class="linkbtn" data-ddel="'+i+'">'+T("ลบรายการนี้","Delete","删除","삭제")+'</button></div>';
   });
   $("debtc").innerHTML=h;
 }
 $("debtc").addEventListener("click",function(e){
-  var b=e.target.closest("[data-dadd],[data-dpay],[data-ddel]");if(!b)return;
-  if(b.hasAttribute("data-dadd")){var n=$("pd_n").value.trim(),r=+$("pd_r").value,p=+$("pd_p").value;if(!n||!(r>0)||!(p>0)){toast(T("ใส่ชื่อ ยอดคงเหลือ และยอดจ่ายต่อเดือนก่อนนะ","Enter a name, remaining amount and monthly payment","请输入名称、剩余金额和每月还款","이름, 남은 금액, 월 상환액을 입력하세요"));return}DEBT.push({n:n,r:r,p:p})}
-  else if(b.hasAttribute("data-dpay")){var i=+b.dataset.dpay;DEBT[i].r=Math.max(0,DEBT[i].r-DEBT[i].p)}
+  var b=e.target.closest("[data-dadd],[data-dpay],[data-ddel],[data-dday]");if(!b)return;
+  if(b.hasAttribute("data-dday")){var di=+b.dataset.dday,dv=Math.floor(+$("pd_dd"+di).value);if(!(dv>=1&&dv<=31)){toast(T("ใส่วันที่ 1–31 นะ","Enter a day 1–31","请输入 1–31","1–31 사이로 입력하세요"));return}DEBT[di].d=dv;sv("tj_debt",DEBT);rDebt();if(window.syncRemSoon)syncRemSoon();toast(T("ตั้งเตือนทุกวันที่ "+dv+" แล้วจ้า 🔔","Reminder set for day "+dv+" 🔔","已设每月 "+dv+" 日提醒 🔔","매월 "+dv+"일 알림 설정 🔔"));return}
+  if(b.hasAttribute("data-dadd")){var n=$("pd_n").value.trim(),r=+$("pd_r").value,p=+$("pd_p").value,dd=Math.floor(+$("pd_d").value);if(!n||!(r>0||p>0)){toast(T("ใส่ชื่อ และยอดคงเหลือหรือยอดจ่ายต่อเดือนก่อนนะ","Enter a name and the remaining amount or monthly payment","请输入名称，以及剩余金额或每月还款","이름과 남은 금액 또는 월 상환액을 입력하세요"));return}if($("pd_d").value&&!(dd>=1&&dd<=31)){toast(T("วันที่จ่ายต้องเป็น 1–31 นะ","Due day must be 1–31","还款日需为 1–31","납부일은 1–31이에요"));return}var o={n:n,r:r>0?r:null,p:p>0?p:0};if(dd)o.d=dd;DEBT.push(o)}
+  else if(b.hasAttribute("data-dpay")){var i=+b.dataset.dpay;if(+DEBT[i].r>0)DEBT[i].r=Math.max(0,DEBT[i].r-(DEBT[i].p||0));DEBT[i].pm=mKey(Date.now())}
   else DEBT.splice(+b.dataset.ddel,1);
-  sv("tj_debt",DEBT);rDebt();
+  sv("tj_debt",DEBT);rDebt();if(window.syncRemSoon)syncRemSoon();
 });
 </script>
 <script>
@@ -1399,7 +1402,18 @@ var API_BASE="https://tuenjai-line-bot.onrender.com";
 function apiBase(){return (ST.apiBase||API_BASE||"").replace(/\/+$/,"")}
 function apiCall(m,path,body){return fetch(apiBase()+path,{method:m,headers:Object.assign({"content-type":"application/json"},ST.lineTok?{authorization:"Bearer "+ST.lineTok}:{}),body:body?JSON.stringify(body):undefined}).then(function(r){if(r.status==401){delete ST.lineTok;saveST();throw new Error("401")}return r.status==204?{}:r.json().then(function(j){if(!r.ok)throw new Error(j.error||r.status);return j})})}
 function applyMe(j){if(j.ref)ST.ref=j.ref;if(j.state=="active")ST.paid={t:j.tier,until:j.until};else delete ST.paid;ST.lineAlerts=!!j.lineAlerts;ST.lineTier=j.tier;saveST();try{prof()}catch(e){}}
-var srT=null;function syncRemSoon(){if(!ST.lineTok||!apiBase())return;clearTimeout(srT);srT=setTimeout(function(){apiCall("PUT","/api/reminders",{items:RM.map(function(r){return [r[0],r[1],r[4]||""]}).concat(window.clockRemItems?clockRemItems():[])}).then(applyMe).catch(function(e){console.log("sync",e.message)})},1500)}
+// Monthly due-day reminders for debts and credit cards: 3 days before and on the day at 09:00.
+function isoOf(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function moneyRemItems(){var out=[],now=new Date(),mk=mKey(Date.now());
+ function add(name,amt,d,paid){var on=T("💸 วันนี้ครบกำหนดจ่าย ","💸 Due today: ","💸 今天到期：","💸 오늘 납부: ")+name+(amt?" "+fmt(amt):""),pre=T("💸 อีก 3 วันครบกำหนดจ่าย ","💸 Due in 3 days: ","💸 3 天后到期：","💸 3일 후 납부: ")+name+(amt?" "+fmt(amt):"");
+  if(paid){var y=now.getFullYear(),m=now.getMonth()+1,last=new Date(y,m+1,0).getDate(),due=new Date(y,m,Math.min(d,last)),b4=new Date(due);b4.setDate(b4.getDate()-3);out.push([on,"09:00",isoOf(due)]);out.push([pre,"09:00",isoOf(b4)]);return}
+  out.push([on,"09:00","M"+d]);if(d>3)out.push([pre,"09:00","M"+(d-3)])}
+ DEBT.forEach(function(x){if(x.d&&(x.r==null||x.r===""||+x.r>0))add(x.n,x.p,x.d,x.pm===mk)});
+ CARD.forEach(function(c){if(c.d&&+c.b>0)add(c.n,+c.b,c.d,false)});return out}
+window.moneyRemItems=moneyRemItems;
+(function(){var fired={};setInterval(function(){var d=new Date(),hm=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),iso=isoOf(d),dd=d.getDate(),last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+ moneyRemItems().forEach(function(r){var day=r[2],hit=day==iso||(day[0]=="M"&&(+day.slice(1)==dd||(dd==last&&+day.slice(1)>last)));var k=iso+r[0];if(hit&&r[1]==hm&&!fired[k]){fired[k]=1;showDue(r[0])}})},15000)})();
+var srT=null;function syncRemSoon(){if(!ST.lineTok||!apiBase())return;clearTimeout(srT);srT=setTimeout(function(){apiCall("PUT","/api/reminders",{items:RM.map(function(r){return [r[0],r[1],r[4]||""]}).concat(window.clockRemItems?clockRemItems():[]).concat(window.moneyRemItems?moneyRemItems():[])}).then(applyMe).catch(function(e){console.log("sync",e.message)})},1500)}
 var _rr3=rrender;rrender=function(){_rr3();syncRemSoon()};
 function lineBox(){var b=apiBase(),h='<h2>'+T("เชื่อมกับ LINE","Connect LINE","连接 LINE","LINE 연결")+'</h2><div class="card" style="margin-top:0">';
 if(!b)h+='<p class="small" style="margin:0">'+T("ยังไม่ได้ตั้งที่อยู่เซิร์ฟเวอร์บอท เจ้าของแอปต้องใส่ API_BASE ก่อน","The bot server address isn't set yet (owner: set API_BASE)","尚未设置机器人服务器地址（请设置 API_BASE）","봇 서버 주소가 아직 없어요 (API_BASE 설정 필요)")+'</p>';
