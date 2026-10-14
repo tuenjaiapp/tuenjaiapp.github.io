@@ -1345,6 +1345,18 @@ h+='<div class="card"><b>➕ '+T("จดยอดขาย","Log a sale","记录
 if(SFORM=="b")h+='<div class="card"><b>➖ '+T("จดซื้อของ/ต้นทุน","Log a cost","记录成本","원가 기록")+'</b><input id="b_n" maxlength="40" placeholder="'+T("ซื้ออะไร เช่น มะละกอ ค่าแผง","What, e.g. ingredients, stall rent","什么，如原料、摊位费","무엇, 예: 재료, 자리세")+'"><input id="b_a" type="number" min="0" inputmode="decimal" placeholder="'+T("จำนวนเงิน (บาท)","Amount (THB)","金额（泰铢）","금액 (바트)")+'"><button class="btn" data-bsave>'+T("บันทึก","Save","保存","저장")+'</button><p class="small">'+T("ถ้าใส่ต้นทุนต่อชิ้นตอนขายไว้แล้ว ไม่ต้องจดค่าวัตถุดิบของสินค้านั้นซ้ำ ใช้ช่องนี้สำหรับค่าอื่น เช่น ค่าแผง ค่าส่ง","If you set a cost per item when selling, don't log those ingredients again. Use this for other costs like stall rent or delivery.","若卖出时已填单件成本，就不要重复记原料。这里记其他费用，如摊位费、运费","판매 시 개당 원가를 넣었다면 재료비를 다시 적지 마세요. 자리세·배송비 등에 쓰세요")+'</p></div>';
 var by={};L.forEach(function(t){if(t.k!="s")return;var k=t.n.toLowerCase(),o=by[k]||(by[k]={n:t.n,q:0,a:0,c:0,hc:true});o.q+=t.q;o.a+=t.a;if(t.c==null)o.hc=false;else o.c+=t.c*t.q});
 var top=Object.keys(by).map(function(k){return by[k]}).sort(function(a,b){return b.a-a.a}).slice(0,5);
+var JB=(ST2.jobs||[]),JO=JB.filter(function(j){return j.status=="open"});
+if(JB.length){var owe=JO.reduce(function(a,j){return a+Math.max(0,j.total-j.paid)},0);
+ var dW=function(ts){if(!ts)return T("ยังไม่กำหนด","Not set","未定","미정");var d=new Date(ts),t=new Date();t.setHours(0,0,0,0);var n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/864e5);return d.getDate()+"/"+(d.getMonth()+1)+" "+(n>1?T("(อีก "+n+" วัน)","(in "+n+" days)","（还有 "+n+" 天）","("+n+"일 후)"):n==1?T("(พรุ่งนี้)","(tomorrow)","（明天）","(내일)"):n==0?T("(วันนี้!)","(today!)","（今天！）","(오늘!)"):T("(เลยมา "+(-n)+" วัน)",(-n)+" days late","（逾期 "+(-n)+" 天）",(-n)+"일 지남"))};
+ var kv=function(k,v,c){return '<div class="kv" style="margin:2px 0"><span>'+k+'</span><b'+(c?' style="color:'+c+'"':'')+' data-nt>'+v+'</b></div>'};
+ h+='<h2>🧾 '+T("ออเดอร์","Orders","订单","주문")+' ('+JO.length+')</h2><div class="card" style="margin-top:0">'+kv(T("ยอดค้างรับรวม","Still to collect","待收合计","받을 금액"),bt(owe),owe>0?"#E0604B":null)+'<p class="small" style="margin:6px 0 0">'+T('รับเงินเพิ่ม/ส่งงาน พิมพ์ในไลน์ เช่น "รับเงิน #1 5000" หรือ "ส่งงาน #1"','To record payments or delivery, type in LINE, e.g. "รับเงิน #1 5000" or "ส่งงาน #1"','在 LINE 输入如 "รับเงิน #1 5000" 或 "ส่งงาน #1"','LINE에서 "รับเงิน #1 5000" 또는 "ส่งงาน #1" 입력')+'</p></div>';
+ h+=JB.slice(0,20).map(function(j){var left=Math.max(0,j.total-j.paid),late=j.status=="open"&&j.due&&j.due<new Date().setHours(0,0,0,0);
+  var st=j.status=="done"?"✅ "+T("ส่งแล้ว","Delivered","已交付","배송 완료"):j.status=="cancel"?"⛔ "+T("ยกเลิก","Cancelled","已取消","취소"):late?"⚠️ "+T("เลยกำหนดส่ง","Overdue","逾期","지연"):"🛠️ "+T("กำลังทำ","In progress","进行中","진행 중");
+  return '<div class="card" style="padding:0;overflow:hidden'+(j.status!="open"?';opacity:.7':'')+'">'+(j.img?'<img src="'+esc(j.img)+'" alt="" loading="lazy" style="display:block;width:100%;max-height:220px;object-fit:cover">':'')+'<div style="padding:12px 14px"><div style="font-size:12px;color:var(--sub)">#'+j.no+' · '+st+(j.imgs>1?' · 📷 '+j.imgs:'')+'</div><b style="display:block;font-size:16px;color:var(--ink);margin:2px 0 6px;word-break:break-word">'+esc(j.title)+'</b>'
+   +kv(T("ราคา","Price","价格","가격"),bt(j.total))+kv(T("รับแล้ว","Received","已收","받음"),bt(j.paid),"#2E9E6A")+kv(T("ค้างชำระ","Balance","未付","잔액"),bt(left),left>0?"#E0604B":"#2E9E6A")
+   +(j.cost>0?kv(T("ต้นทุน","Cost","成本","원가"),bt(j.cost))+kv(T("กำไร","Profit","利润","이익"),bt(j.total-j.cost),"#2E9E6A"):'')
+   +kv(T("กำหนดส่ง","Due","交付日","납기"),dW(j.due),late?"#E0604B":null)+(j.phone?kv(T("โทร","Phone","电话","전화"),esc(j.phone)):'')+(j.note?'<p class="small" style="margin:6px 0 0">📝 '+esc(j.note)+'</p>':'')+'</div></div>'}).join("");
+}
 h+='<h2>🏆 '+T("สินค้าขายดี","Best sellers","畅销商品","베스트셀러")+'</h2>';
 h+=top.length?'<div class="group">'+top.map(function(o,i){return '<div class="row" style="cursor:default"><span class="ico i'+(i%4+1)+'">'+(["🥇","🥈","🥉","4","5"][i])+'</span><span class="t"><b>'+esc(o.n)+'</b><span>'+T("ขาย ","Sold ","售出 ","판매 ")+o.q+T(" ชิ้น"," pcs"," 件","개")+(o.hc?' · '+T("กำไร ","profit ","利润 ","이익 ")+bt(o.a-o.c):'')+'</span></span><b data-nt>'+bt(o.a)+'</b></div>'}).join("")+'</div>':'<div class="empty">'+T("ยังไม่มียอดขายในช่วงนี้","No sales in this period yet","此期间还没有销售","이 기간에 판매가 없어요")+'</div>';
 h+='<h2>🧾 '+T("รายการ","Entries","记录","내역")+'</h2>';
@@ -1400,6 +1412,7 @@ function syncNow(){if(syBusy||!ST.lineTok||!apiBase())return;syBusy=true;
 tx.forEach(function(t){if(!t[5])t[5]=nid()});ST2.tx.forEach(function(t){if(!t.id)t.id=nid()});
 var shopOn=tierIx()==2,body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};
 apiCall("POST","/api/sync",body).then(function(j){applyMe(j);
+ if(j.jobs){var jj=JSON.stringify(j.jobs);if(jj!==JSON.stringify(ST2.jobs||[])){ST2.jobs=j.jobs;sv("tj_store",ST2);try{var pg=document.querySelector(".page.on");if(pg&&pg.id=="p-shop")rStore()}catch(e){}}}
  body.tx.forEach(function(r){if(r.del)delete SNAP.t[r.id];else SNAP.t[r.id]=fp(r)});
  if(j.shopSynced)body.shop.forEach(function(r){if(r.del)delete SNAP.s[r.id];else SNAP.s[r.id]=fp(r)});
  var ch=false,ix={};tx.forEach(function(t,i){ix[t[5]]=i});
