@@ -946,11 +946,12 @@ function rRec(){
     +'<input id="pr_d" type="number" min="1" max="31" inputmode="numeric" placeholder="'+T("วันที่ของทุกเดือน (1–31)","Day of month (1–31)","每月几号（1–31）","매월 며칠 (1–31)")+'">'
     +'<button class="btn" data-radd>'+T("บันทึกรายการประจำ","Save recurring entry","保存固定收支","반복 내역 저장")+'</button></div>';
   if(!REC.length)h+='<p class="note">'+T("ยังไม่มีรายการประจำ","No recurring entries yet","还没有固定收支","아직 반복 내역이 없어요")+'</p>';
-  REC.forEach(function(r,i){h+='<div class="card"><div class="kv" style="margin:0"><b style="color:var(--ink);font-size:15px">'+esc(r.n)+'</b><b data-nt class="'+(r.inc?"pos":"neg")+'">'+(r.inc?"+":"−")+fmt(r.a)+'</b></div><div class="kv"><span>'+T("ทุกวันที่ "+r.d,"Every month on day "+r.d,"每月 "+r.d+" 号","매월 "+r.d+"일")+'</span></div><button class="linkbtn" data-rdel="'+i+'">'+T("ลบ","Delete","删除","삭제")+'</button></div>'});
+  REC.forEach(function(r,i){h+='<div class="card"><div class="kv" style="margin:0"><b style="color:var(--ink);font-size:15px">'+esc(r.n)+'</b><b data-nt class="'+(r.inc?"pos":"neg")+'">'+(r.inc?"+":"−")+fmt(r.a)+'</b></div><div class="kv"><span>'+T("ทุกวันที่ "+r.d,"Every month on day "+r.d,"每月 "+r.d+" 号","매월 "+r.d+"일")+'</span></div>'+(r.inc?'':'<div class="kv"><span>'+(r.rem!==false?'🔔 '+T("เตือนก่อน 3 วัน และวันจ่าย 9 โมง","Reminds 3 days before and on the day at 9:00","提前 3 天和当天 9 点提醒","3일 전과 당일 9시에 알림"):'🔕 '+T("ปิดเตือนอยู่","Reminders off","提醒已关闭","알림 꺼짐"))+'</span><button class="linkbtn" data-rrem="'+i+'" style="margin:0">'+(r.rem!==false?T("ปิดเตือน","Turn off","关闭","끄기"):T("เปิดเตือน","Turn on","开启","켜기"))+'</button></div>')+'<button class="linkbtn" data-rdel="'+i+'">'+T("ลบ","Delete","删除","삭제")+'</button></div>'});
   $("recc").innerHTML=h;
 }
 $("recc").addEventListener("click",function(e){
-  var b=e.target.closest("[data-radd],[data-rdel]");if(!b)return;
+  var b=e.target.closest("[data-radd],[data-rdel],[data-rrem]");if(!b)return;
+  if(b.hasAttribute("data-rrem")){var ri=+b.dataset.rrem;REC[ri].rem=REC[ri].rem===false;sv("tj_rec",REC);rRec();if(window.syncRemSoon)syncRemSoon();return}
   if(b.hasAttribute("data-radd")){
     var n=$("pr_n").value.trim(),a=+$("pr_a").value,d=Math.floor(+$("pr_d").value),inc=$("pr_t").value=="inc";
     if(!n||!(a>0)||!(d>=1&&d<=31)){toast(T("กรอกชื่อ จำนวนเงิน และวันที่ (1–31) ก่อนนะ","Enter a name, amount and day (1–31)","请输入名称、金额和日期（1–31）","이름, 금액, 날짜(1–31)를 입력하세요"));return}
@@ -958,7 +959,7 @@ $("recc").addEventListener("click",function(e){
     // If that day already passed this month, the first automatic entry is next month.
     REC.push({n:n,a:a,d:d,inc:inc,last:now.getDate()>=Math.min(d,dimOf(now.getFullYear(),now.getMonth()))?ym:""});
   } else REC.splice(+b.dataset.rdel,1);
-  sv("tj_rec",REC);rRec();
+  sv("tj_rec",REC);rRec();if(window.syncRemSoon)syncRemSoon();
 });
 
 // Accounts and cash
@@ -1409,7 +1410,8 @@ function moneyRemItems(){var out=[],now=new Date(),mk=mKey(Date.now());
   if(paid){var y=now.getFullYear(),m=now.getMonth()+1,last=new Date(y,m+1,0).getDate(),due=new Date(y,m,Math.min(d,last)),b4=new Date(due);b4.setDate(b4.getDate()-3);out.push([on,"09:00",isoOf(due)]);out.push([pre,"09:00",isoOf(b4)]);return}
   out.push([on,"09:00","M"+d]);if(d>3)out.push([pre,"09:00","M"+(d-3)])}
  DEBT.forEach(function(x){if(x.d&&(x.r==null||x.r===""||+x.r>0))add(x.n,x.p,x.d,x.pm===mk)});
- CARD.forEach(function(c){if(c.d&&+c.b>0)add(c.n,+c.b,c.d,false)});return out}
+ CARD.forEach(function(c){if(c.d&&+c.b>0)add(c.n,+c.b,c.d,false)});
+ REC.forEach(function(r){if(!r.inc&&r.rem!==false&&r.d)add(r.n,r.a,r.d,false)});return out}
 window.moneyRemItems=moneyRemItems;
 (function(){var fired={};setInterval(function(){var d=new Date(),hm=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),iso=isoOf(d),dd=d.getDate(),last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
  moneyRemItems().forEach(function(r){var day=r[2],hit=day==iso||(day[0]=="M"&&(+day.slice(1)==dd||(dd==last&&+day.slice(1)>last)));var k=iso+r[0];if(hit&&r[1]==hm&&!fired[k]){fired[k]=1;showDue(r[0])}})},15000)})();
