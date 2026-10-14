@@ -1939,4 +1939,21 @@ try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปล
    }).catch(function(e){console.log("liff",e&&e.message)})})}).catch(function(){})
 })();
 </script>
+<script>
+// Tax report: asks the bot for a printable yearly report and opens it in the phone's own browser.
+(function(){
+ var L=function(){return (typeof T==="function")?T.apply(null,arguments):arguments[0]};
+ function openUrl(u){u+=(u.indexOf("?")<0?"?":"&")+"openExternalBrowser=1";try{if(window.liff&&liff.isInClient&&liff.isInClient()){liff.openWindow({url:u,external:true});return}}catch(e){}var w=window.open(u,"_blank");if(!w)location.href=u}
+ window.openTaxReport=function(kind){
+  if(!window.ST||!ST.lineTok){toast(L("เชื่อมแอปกับ LINE ก่อนนะ (กดเมนู \"เปิดแอป\" ในไลน์)","Link the app with LINE first","请先连接 LINE","먼저 LINE과 연결하세요"));return}
+  var d=new Date(),y=d.getMonth()<=3?d.getFullYear()-1:d.getFullYear();
+  toast(L("กำลังสร้างรายงาน…","Making your report…","正在生成报表…","보고서 만드는 중…"));
+  apiCall("POST","/api/report",{year:y}).then(function(j){var u=kind=="shop"?j.shop:j.personal;if(!u){toast(L("ยังไม่มีรายการร้านค้า","No shop entries yet","还没有店铺记录","가게 기록이 없어요"));return}openUrl(u)})
+  .catch(function(e){toast(String(e.message).indexOf("plus")>=0||String(e.message)=="402"?L("รายงานประจำปีสำหรับสมาชิก Plus ขึ้นไปจ้า","Yearly reports are for Plus members","年度报表为 Plus 会员功能","연간 보고서는 Plus 회원 기능이에요"):L("ติดต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง","Couldn't reach the server, try again","无法连接服务器","서버에 연결할 수 없어요"))})};
+ try{if(window.MENU&&MENU.push){
+  MENU.splice(5,0,["📄",["รายงานยื่นภาษี","Tax report","报税报表","세금 보고서"],["พิมพ์ / PDF / Excel รายรับรายจ่ายทั้งปี","Print, PDF or Excel for the year","全年收支 打印/PDF/Excel","연간 수입·지출 인쇄/PDF/엑셀"],"ภาษี รายงาน ยื่นภาษี พิมพ์ pdf excel tax report 报税 세금",function(){openTaxReport("personal")}]);
+  MENU.splice(6,0,["🧾",["รายงานเงินสดรับ-จ่าย (ร้าน)","Shop cash report","店铺现金收支报表","가게 현금 보고서"],["ยอดขาย ต้นทุน ทั้งปี สำหรับยื่นภาษี","Sales and costs for the year","全年销售与成本","연간 매출·비용"],"ร้าน ภาษี เงินสดรับจ่าย รายงาน shop tax 店铺 가게",function(){openTaxReport("shop")}]);
+ }}catch(e){}
+})();
+</script>
 </body></html>
