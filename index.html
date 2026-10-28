@@ -1340,8 +1340,8 @@ function svStore(){sv("tj_store",ST2)}
 G.g8=[["🏪","i1","สมุดร้านค้า","ยอดขาย ต้นทุน กำไร สรุปให้ทุกวัน"],["🧮","i2","คำนวณต้นทุน","ตั้งราคาขาย ดูกำไร หน้าร้านและแอปที่หัก GP"]];RT["เปิดสมุดร้านค้า"]="p-shop";RT["เปิดคำนวณต้นทุน"]="p-cost";careGrid("g8");
 var _rf0=refresh;refresh=function(){_rf0();var p=document.querySelector(".page.on");if(p&&p.id=="p-shop")rStore();if(p&&p.id=="p-cost")rCost()};
 // ---------- cost & price calculator (คำนวณต้นทุน-ราคาขาย) ----------
-var COST=Object.assign({ch:[{n:"หน้าร้าน",g:0},{n:"Grab",g:30},{n:"LINE MAN",g:30},{n:"ShopeeFood",g:25}],tm:30,pr:[],lib:[],oh:[],mu:0},ld("tj_cost")||{});COST.lib=COST.lib||[];COST.oh=COST.oh||[];var CLIB=false,CED=null,CD=null,CSET=false,CDEL=false;
-function svCost(){sv("tj_cost",COST)}
+var COST=Object.assign({ch:[{n:"หน้าร้าน",g:0},{n:"Grab",g:30},{n:"LINE MAN",g:30},{n:"ShopeeFood",g:25}],tm:30,pr:[],lib:[],oh:[],mu:0},ld("tj_cost")||{});COST.lib=COST.lib||[];COST.oh=COST.oh||[];if(!COST.ts&&(COST.pr.length||COST.lib.length))COST.ts=1;var CLIB=false,CED=null,CD=null,CSET=false,CDEL=false;
+function svCost(keepTs){if(!keepTs)COST.ts=Date.now();sv("tj_cost",COST);if(!keepTs&&window.syncSoon)try{syncSoon()}catch(e){}}
 function r2(n){return Math.round(n*100)/100}
 function libOf(id){for(var i=0;i<COST.lib.length;i++)if(COST.lib[i].id===id)return COST.lib[i]}
 function libByName(n){n=String(n||"").trim().toLowerCase();for(var i=0;i<COST.lib.length;i++)if(COST.lib[i].n.toLowerCase()===n)return COST.lib[i]}
@@ -1574,8 +1574,9 @@ function syncSoon(ms){if(!ST.lineTok||!apiBase())return;clearTimeout(syT);syT=se
  apiCall("POST","/api/link",{code:m[1],quiet:true}).then(function(j){ST.lineTok=j.token;applyMe(j);saveST();try{rSet()}catch(e){}if(typeof syncRemSoon==="function")syncRemSoon();SNAP={t:{},s:{},at:0};setTimeout(function(){syncNow()},300);toast(T("เชื่อมกับ LINE แล้วจ้า 🔗 รายการจากไลน์กำลังมา","Linked with LINE 🔗 Loading your entries","已连接 LINE 🔗 正在载入记录","LINE에 연결했어요 🔗 기록을 불러오는 중"))}).catch(function(e){if(oldTok){ST.lineTok=oldTok;syncSoon(300)}toast(T("ลิงก์หมดอายุ กด \"เปิดแอป\" ในไลน์อีกครั้งนะ","Link expired. Tap \"Open app\" in LINE again","链接已过期，请在 LINE 再点一次“打开应用”","링크가 만료됐어요. LINE에서 \"앱 열기\"를 다시 눌러 주세요"))})})();
 function syncNow(){if(syBusy||!ST.lineTok||!apiBase())return;syBusy=true;
 tx.forEach(function(t){if(!t[5])t[5]=nid()});ST2.tx.forEach(function(t){if(!t.id)t.id=nid()});
-var shopOn=shopOk(),body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};if(shopOn)body.items=ST2.items.slice(0,300).map(function(i){return {n:i.n,p:+i.p||0,c:i.c==null?null:+i.c}});
-apiCall("POST","/api/sync",body).then(function(j){applyMe(j);
+var shopOn=shopOk(),body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};if(window.COST){body.costTs=COST.ts||0;if((COST.ts||0)>(ST.costSent||0)&&(COST.pr.length||COST.lib.length||COST.oh.length))body.cost=COST}if(shopOn)body.items=ST2.items.slice(0,300).map(function(i){return {n:i.n,p:+i.p||0,c:i.c==null?null:+i.c}});
+apiCall("POST","/api/sync",body).then(function(j){applyMe(j);if(body.cost){ST.costSent=body.cost.ts;saveST()}
+ if(j.cost&&typeof j.cost=="object"&&(j.cost.ts||0)>(COST.ts||0)){COST=Object.assign({ch:COST.ch,tm:30,pr:[],lib:[],oh:[],mu:0},j.cost);svCost(true);ST.costSent=COST.ts;saveST();try{var pgc=document.querySelector(".page.on");if(pgc&&pgc.id=="p-cost"&&CED===null)rCost()}catch(e){}}
  if(j.jobs){var jj=JSON.stringify(j.jobs);if(jj!==JSON.stringify(ST2.jobs||[])){ST2.jobs=j.jobs;sv("tj_store",ST2);try{var pg=document.querySelector(".page.on");if(pg&&pg.id=="p-shop")rStore()}catch(e){}}}
  body.tx.forEach(function(r){if(r.del)delete SNAP.t[r.id];else SNAP.t[r.id]=fp(r)});
  if(j.shopSynced)body.shop.forEach(function(r){if(r.del)delete SNAP.s[r.id];else SNAP.s[r.id]=fp(r)});
