@@ -557,6 +557,10 @@ var PRICE={m:59,y:590};
 function trialLeft(){return Math.max(0,7-Math.floor((Date.now()-TS)/DAY))}
 function allCatKeys(){return EXP.concat((window.CUS||[]).map(function(n){return "c:"+n}))}
 function budTotal(){return +BUD.total||allCatKeys().reduce(function(s,k){return s+(+BUD.cats[k]||0)},0)}
+function idLike(num){var d=String(num).split(".")[0];return d.indexOf(",")<0&&(d.length>=9||(d.length>=6&&d[0]=="0"))}
+// Entries with impossible amounts (a phone or parcel number logged as money): shown with a one-tap fix.
+function oddTx(){var o=[];tx.forEach(function(t,i){if(t&&Math.abs(t[2])>=10000000)o.push(i)});return o}
+function oddHtml(){var o=oddTx();if(!o.length)return "";return '<div class="card" style="border:2px solid #E0604B;margin-top:0"><b style="color:#E0604B">⚠️ '+T("พบรายการเงินสูงผิดปกติ "+o.length+" รายการ","Found "+o.length+" entry with an unusual amount","发现 "+o.length+" 条金额异常的记录",o.length+"개의 비정상 금액 발견")+'</b><p class="small" style="margin:4px 0 8px">'+T("อาจเป็นเบอร์โทรหรือเลขพัสดุที่ถูกจดเป็นเงิน แตะเพื่อแก้หรือลบ","Probably a phone or parcel number logged as money. Tap to fix or delete","可能把电话或单号记成了金额，点按修改或删除","전화번호·송장번호가 금액으로 기록된 것 같아요. 눌러서 수정/삭제")+'</p>'+o.map(function(i){var t=tx[i],d=new Date(t[3]||Date.now());return '<button class="row" data-ei="'+i+'" style="width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit"><span class="ico i1">'+t[0]+'</span><span class="t"><b>'+esc(t[1])+'</b><span>'+d.getDate()+'/'+(d.getMonth()+1)+'</span></span><b class="neg">'+(t[2]<0?"−":"+")+fmt(t[2])+'</b></button>'}).join("")+'</div>'}
 function spentMonth(mk){var o={_:0};tx.forEach(function(t){if(t[2]<0&&mKey(t[3])==mk){o[t[4]]=(o[t[4]]||0)-t[2];o._-=t[2]}});return o}
 
 // ---------- home ----------
@@ -579,6 +583,7 @@ if(b){if(s[c]>b)return T("เกินงบ"+n+"แล้วนะ 🐥","Over 
 var tot=budTotal();if(tot){if(s._>tot)return T("ใช้เกินงบเดือนนี้แล้วนะ ค่อยๆ ชะลอหน่อยน้า 🐥","You're over this month's budget. Let's slow down a bit 🐥","本月已超预算，稍微放慢一点吧 🐥","이번 달 예산을 넘었어요. 조금 천천히 써요 🐥");if(s._>=tot*.8)return T("ใช้งบเดือนนี้ไป "+Math.round(s._/tot*100)+"% แล้วนะ 🐥","You've used "+Math.round(s._/tot*100)+"% of this month's budget 🐥","本月预算已用 "+Math.round(s._/tot*100)+"% 🐥","이번 달 예산의 "+Math.round(s._/tot*100)+"%를 썼어요 🐥")}return ""}
 add=function(s){var m=s.trim().match(/^(.*?)\s*฿?\s*([\d,]+(?:\.\d+)?)\s*(บาท|baht|฿|元|块|원)?$/i),bad=T('พิมพ์แบบ "ข้าว 50" ได้เลยจ้า','Try typing "lunch 50"','试试输入“午饭 50”','"점심 50"처럼 입력해 보세요');
 if(!m||!m[1].trim()){toast(bad);return}var n=parseFloat(m[2].replace(/,/g,""));if(!(n>0)){toast(bad);return}
+if(idLike(m[2])||n>50000000){toast(T("ตัวเลขยาวแบบนี้ดูเหมือนเบอร์โทรหรือเลขพัสดุ ไม่จดเป็นเงินนะ","That long number looks like a phone or parcel number, so it wasn't logged","这串数字像电话或单号，未记账","전화번호나 송장번호 같아서 기록하지 않았어요"));return}
 var title=m[1].trim(),inc=INC.test(title),c=guess(title,inc);tx.push([CAT[c][0],title,inc?n:-n,Date.now(),c]);render();
 toast(inc?T("จดรายรับให้แล้วจ้า 💰","Income logged 💰","已记录收入 💰","수입을 기록했어요 💰"):(budMsg(c)||T("จดให้แล้วจ้า 💗","Logged 💗","记好了 💗","기록했어요 💗")))};
 
@@ -596,7 +601,8 @@ $("tq").placeholder=T("ค้นหารายการ","Search entries","搜�
 $("tfc").innerHTML=[["all",T("ทั้งหมด","All","全部","전체")],["exp",T("รายจ่าย","Expenses","支出","지출")],["inc",T("รายรับ","Income","收入","수입")]].map(function(f){return '<button data-tf="'+f[0]+'" class="'+(TF==f[0]?"on":"")+'">'+f[1]+'</button>'}).join("");
 var q=TQ.trim().toLowerCase(),it=tx.map(function(t,k){return[t,k]}).filter(function(x){var t=x[0];return mKey(t[3])==mk&&(TF=="all"||(TF=="inc")==(t[2]>0))&&(!q||t[1].toLowerCase().indexOf(q)>=0||cn(t[4]).toLowerCase().indexOf(q)>=0)}).sort(function(a,b){return b[0][3]-a[0][3]});
 var i=0,e=0;it.forEach(function(x){x[0][2]>0?i+=x[0][2]:e-=x[0][2]});
-$("txs").innerHTML='<div class="stat s2">'+T("รายรับ","Income","收入","수입")+'<b data-nt>'+fmt(i)+'</b></div><div class="stat s3">'+T("รายจ่าย","Expenses","支出","지출")+'<b data-nt>'+fmt(e)+'</b></div><div class="stat s1">'+T("คงเหลือ","Net","结余","잔액")+'<b data-nt>'+(i-e<0?"−":"")+fmt(i-e)+'</b></div>';
+try{var oh0=$("txodd");if(!oh0){oh0=document.createElement("div");oh0.id="txodd";$("txs").parentNode.insertBefore(oh0,$("txs"))}oh0.innerHTML=oddHtml()}catch(e){}
+ $("txs").innerHTML='<div class="stat s2">'+T("รายรับ","Income","收入","수입")+'<b data-nt>'+fmt(i)+'</b></div><div class="stat s3">'+T("รายจ่าย","Expenses","支出","지출")+'<b data-nt>'+fmt(e)+'</b></div><div class="stat s1">'+T("คงเหลือ","Net","结余","잔액")+'<b data-nt>'+(i-e<0?"−":"")+fmt(i-e)+'</b></div>';
 if(!it.length){$("txl").innerHTML='<div class="say">'+chick()+'<div class="bub">'+(q?T("ไม่พบรายการที่ค้นหาจ้า","No matching entries","没有找到相关记录","검색 결과가 없어요"):T("เดือนนี้ยังไม่มีรายการ กด \"+ เพิ่มรายการ\" ได้เลย","No entries this month. Tap \"+ Add entry\".","本月还没有记录，点“+ 添加记录”吧","이번 달 기록이 없어요. \"+ 항목 추가\"를 눌러 보세요"))+'</div></div>'}
 else{var h="",cur="",grp="";it.forEach(function(x){var t=x[0],d=new Date(t[3]),k=d.toDateString();if(k!=cur){if(cur)h+=grp+'</div>';cur=k;var net=it.filter(function(y){return new Date(y[0][3]).toDateString()==k}).reduce(function(s,y){return s+y[0][2]},0);h+='<div class="dayh"><span>'+d.toLocaleDateString(LOC[LI],{weekday:"long",day:"numeric",month:"short"})+'</span><span data-nt>'+sgn(net)+'</span></div><div class="group">';grp=""}
 grp+='<button class="row" data-ei="'+x[1]+'"><span class="ico '+(t[2]>0?"i4":"i1")+'">'+t[0]+'</span><span class="t"><b data-nt>'+esc(t[1])+'</b><span>'+cn(t[4])+' · '+d.toLocaleTimeString(LOC[LI],{hour:"2-digit",minute:"2-digit"})+'</span></span><span class="amt '+(t[2]<0?"neg":"pos")+'" data-nt>'+sgn(t[2])+'</span></button>'});h+=grp+'</div>';$("txl").innerHTML=h}
@@ -630,7 +636,7 @@ h+='<div class="card"><div class="kv" style="margin:0"><span>'+T("งบเด�
 var rows=allCatKeys().filter(function(k){return +BUD.cats[k]>0||s[k]>0});
 if(rows.length){h+='<h2>'+T("แยกตามหมวด","By category","按类别","분류별")+'</h2><div class="group">'+rows.map(function(k){var b=+BUD.cats[k],u=s[k]||0;return '<div class="row" style="cursor:default"><span class="ico i1">'+(CAT[k]||CAT.other)[0]+'</span><span class="t"><b>'+cn(k)+'</b><span data-nt>'+(b?T("ใช้ "+fmt(u)+" จาก "+fmt(b),fmt(u)+" of "+fmt(b),"已用 "+fmt(u)+" / "+fmt(b),fmt(b)+" 중 "+fmt(u)+" 사용"):T("ใช้ "+fmt(u)+" · ยังไม่ตั้งงบ",fmt(u)+" spent · no budget","已用 "+fmt(u)+" · 未设预算",fmt(u)+" 사용 · 예산 없음"))+'</span>'+(b?bar(Math.round(u/b*100)):"")+'</span></div>'}).join("")+'</div>'}
 if(tot)h+='<button class="btn ghost" data-be>'+T("แก้ไขงบ","Edit budget","修改预算","예산 수정")+'</button>';
-$("budc").innerHTML=h}
+$("budc").innerHTML=oddHtml()+h}
 function openB(){$("bsh").textContent=T("ตั้งงบรายเดือน","Monthly budget","每月预算","월 예산");
 $("bsi").innerHTML='<div class="bi"><span><b>'+T("งบรวมทั้งเดือน","Total for the month","全月总预算","한 달 전체")+'</b><br><small style="color:var(--sub)">'+T("เว้นว่างได้ จะรวมจากงบแต่ละหมวดให้","Optional. Leave blank to add up the categories","可留空，将自动合计各类别","비워 두면 분류별 예산을 합산해요")+'</small></span><input type="number" min="0" step="1" inputmode="numeric" id="btot" value="'+(+BUD.total||"")+'" aria-label="total"></div>'+allCatKeys().map(function(k){return '<div class="bi"><span>'+(CAT[k]||CAT.other)[0]+' '+cn(k)+'</span><input type="number" min="0" step="1" inputmode="numeric" data-bk="'+k+'" value="'+(+BUD.cats[k]||"")+'" aria-label="'+cn(k)+'"></div>'}).join("");
 $("bsv").textContent=T("บันทึกงบ","Save budget","保存预算","예산 저장");$("bcx").textContent=T("ยกเลิก","Cancel","取消","취소");$("bs").style.display="flex"}
@@ -2066,7 +2072,7 @@ window.tpOpen=open;
 <script>
 // Self-update: phones and the LINE in-app browser can keep an old copy of this page. If the server has a newer
 // version, reload once with a fresh URL.
-(function(){var V="202610282348";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
+(function(){var V="202610282353";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
  setTimeout(function(){fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var V="(\d+)"/);if(m&&m[1]!==V&&m[1]>V){try{sessionStorage.setItem("tj_upd",m[1])}catch(e){}var u=new URL(location.href);u.searchParams.set("v",m[1]);location.replace(u.toString())}}).catch(function(){})},1500)})();
 // Lifetime Shop pack: a small home banner, and a one-time popup on the 3rd visit (never again after closing).
 (function(){
