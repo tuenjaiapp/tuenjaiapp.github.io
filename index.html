@@ -291,6 +291,7 @@ body.fs1 .app,body.fs1 nav,body.fs1 .ovc{zoom:1.12}body.fs2 .app,body.fs2 nav,bo
 <section class="page" id="p-priv" data-parent="me"><div class="sh"><button class="back" data-t="me" aria-label="กลับ">‹</button><h1 id="privh"></h1></div><div id="privc"></div></section>
 <section class="page" id="p-calc" data-parent="money"><div class="sh"><button class="back" data-t="money" aria-label="กลับ">‹</button><h1 id="calch"></h1></div><div id="calcc"></div></section>
 <section class="page" id="p-daily" data-parent="money"><div class="sh"><button class="back" data-t="money" aria-label="กลับ">‹</button><h1 id="dayh"></h1></div><div id="dayc"></div></section>
+<section class="page" id="p-cost" data-parent="money"><div class="sh"><button class="back" data-t="money" aria-label="กลับ">‹</button><h1 id="costh"></h1></div><div id="costc"></div></section>
 <section class="page" id="p-shop" data-parent="money"><div class="sh"><button class="back" data-t="money" aria-label="กลับ">‹</button><h1 id="shoph"></h1></div><div id="shopc"></div></section>
 <section class="page" id="p-trip" data-parent="home"><div class="sh"><button class="back" data-t="home" aria-label="กลับ">‹</button><h1 id="triph"></h1></div><div id="tripc"></div></section>
 <section class="page" id="p-cycle" data-parent="care"><div class="sh"><button class="back" data-t="care" aria-label="กลับ">‹</button><h1 id="cyh"></h1></div><div id="cyc"></div></section>
@@ -657,6 +658,7 @@ var PLROWS=[
 [["เสียงนั่งสมาธิ + ตั้งเวลาเอง","Meditation sounds + custom time","冥想音 + 自定义时长","명상 소리 + 시간 설정"],"all","all","all",null,"",0],
 [["🌸 ปฏิทินรอบเดือน + เตือนยาคุม","🌸 Period calendar + pill reminder","🌸 经期日历 + 服药提醒","🌸 생리 달력 + 피임약 알림"],true,true,true,null,"",0],
 [["✈️ กระปุกเที่ยว (ทริป)","✈️ Trip funds","✈️ 旅行基金","✈️ 여행 저금통"],1,5,-1,function(){return (window.TRIP||[]).length},"trip",0],
+[["🧮 คำนวณต้นทุน-ราคาขาย (สินค้า)","🧮 Cost & price calculator (products)","🧮 成本与售价计算（商品）","🧮 원가·판매가 계산 (상품)"],3,20,-1,function(){return (window.COST?COST.pr.length:0)},"cost",0],
 [["🏪 สมุดร้านค้า: ยอดขาย ต้นทุน กำไร","🏪 Shop book: sales, costs, profit","🏪 店铺账本：销售、成本、利润","🏪 가게 장부: 매출·원가·이익"],false,false,true,null,"shop",0],
 [["ชาเลนจ์กับเพื่อน","Friend challenges","好友挑战","친구 챌린지"],false,true,true,null,"chal",0],
 [["บัญชีครอบครัว","Family account","家庭账户","가족 계정"],false,["3 คน","3 people","3 人","3명"],["ไม่จำกัด","Unlimited","不限","무제한"],null,"fam",0]];
@@ -1333,8 +1335,72 @@ document.addEventListener("keydown",function(e){if(e.target&&e.target.id=="zcin"
 <script>// ---------- shop book (Premium) ----------
 var ST2=Object.assign({items:[],tx:[],notes:[]},ld("tj_store")||{}),SP="d",SFORM="";
 function svStore(){sv("tj_store",ST2)}
-G.g8=[["🏪","i1","สมุดร้านค้า","ยอดขาย ต้นทุน กำไร สรุปให้ทุกวัน"]];RT["เปิดสมุดร้านค้า"]="p-shop";careGrid("g8");
-var _rf0=refresh;refresh=function(){_rf0();var p=document.querySelector(".page.on");if(p&&p.id=="p-shop")rStore()};
+G.g8=[["🏪","i1","สมุดร้านค้า","ยอดขาย ต้นทุน กำไร สรุปให้ทุกวัน"],["🧮","i2","คำนวณต้นทุน","ตั้งราคาขาย ดูกำไร หน้าร้านและแอปที่หัก GP"]];RT["เปิดสมุดร้านค้า"]="p-shop";RT["เปิดคำนวณต้นทุน"]="p-cost";careGrid("g8");
+var _rf0=refresh;refresh=function(){_rf0();var p=document.querySelector(".page.on");if(p&&p.id=="p-shop")rStore();if(p&&p.id=="p-cost")rCost()};
+// ---------- cost & price calculator (คำนวณต้นทุน-ราคาขาย) ----------
+var COST=Object.assign({ch:[{n:"หน้าร้าน",g:0},{n:"Grab",g:30},{n:"LINE MAN",g:30},{n:"ShopeeFood",g:25}],tm:30,pr:[]},ld("tj_cost")||{}),CED=null,CD=null,CSET=false,CDEL=false;
+function svCost(){sv("tj_cost",COST)}
+function r2(n){return Math.round(n*100)/100}
+function cItCost(it){return it.u>0&&it.q>0?(+it.b||0)*it.u/it.q:(+it.b||0)}
+function cTotal(p){return (p.it||[]).reduce(function(a,it){return a+cItCost(it)},0)}
+function cUnit(p){return cTotal(p)/Math.max(1,+p.y||1)}
+function cNet(price,g){return price*(1-(+g||0)/100)}
+function cSuggest(unit,g){var m=(+COST.tm||0)/100,k=(1-(+g||0)/100)*(1-m);return k>0?Math.ceil(unit/k):0}
+function pct(n){return (Math.round(n*10)/10).toLocaleString("th-TH")+"%"}
+function rCost(){$("costh").textContent=T("คำนวณต้นทุน ราคาขาย","Cost & price calculator","成本与售价计算","원가·판매가 계산");var el=$("costc"),h='';
+ if(CED!==null){el.innerHTML=cEditor();cUpd();return}
+ h+='<div class="say">'+chick()+'<div class="bub">'+T("ใส่ต้นทุนวัตถุดิบ แล้วดูว่าขายราคาเท่าไหร่ถึงได้กำไร ทั้งหน้าร้านและแอปที่หัก GP 🧮","Add ingredient costs and see which price makes a profit, in store and on apps that take a GP cut 🧮","填入原料成本，看看定价多少才赚钱，门店和抽成平台都能算 🧮","재료 원가를 넣으면 매장과 수수료 앱에서 이익이 나는 가격을 알려드려요 🧮")+'</div></div>';
+ h+='<button class="btn" data-cnew style="margin-top:4px">➕ '+T("เพิ่มสินค้า / เมนู","Add a product","添加商品","상품 추가")+'</button>';
+ if(!COST.pr.length)h+='<div class="empty">'+T("ยังไม่มีสินค้า ลองเพิ่มเมนูแรก เช่น กะเพราไก่ หรือ โต๊ะหมู่ 9","No products yet. Try your first one","还没有商品，先加一个吧","아직 상품이 없어요. 첫 상품을 추가해 보세요")+'</div>';
+ else h+='<div class="group">'+COST.pr.map(function(p,i){var u=cUnit(p),c0=COST.ch[0],pr=c0?+((p.px||{})[c0.n])||0:0,pf=pr?cNet(pr,c0.g)-u:null;
+  return '<button class="row" data-cedit="'+i+'" style="width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit"><span class="ico i'+(i%4+1)+'">🧮</span><span class="t"><b>'+esc(p.n)+'</b><span>'+T("ต้นทุน/ชิ้น ","Cost each ","单件成本 ","개당 원가 ")+bt(r2(u))+(pr?' · '+esc(c0.n)+' '+bt(pr):'')+'</span></span>'+(pf!=null?'<b class="'+(pf>=0?"pos":"neg")+'" data-nt>'+(pf>=0?"+":"−")+bt(Math.abs(r2(pf)))+'</b>':'<span class="small">'+T("ยังไม่ตั้งราคา","No price yet","未定价","가격 없음")+'</span>')+'</button>'}).join("")+'</div>';
+ h+='<h2>⚙️ '+T("ช่องทางขาย และค่า GP","Sales channels & GP","销售渠道与抽成","판매 채널·수수료")+'</h2><div class="card">';
+ h+=COST.ch.map(function(c,i){return '<div class="jrow" style="align-items:center;margin-top:6px"><input data-chn="'+i+'" value="'+esc(c.n)+'" maxlength="20" style="margin:0;flex:2;min-width:0"><input data-chg="'+i+'" type="number" min="0" max="90" inputmode="decimal" value="'+(+c.g||0)+'" style="margin:0;flex:1;min-width:0;width:auto"><span class="small" style="flex:none">% GP</span>'+(i?'<button class="linkbtn" data-chdel="'+i+'" style="margin:0;flex:none">✕</button>':'<span style="width:22px;flex:none"></span>')+'</div>'}).join("");
+ h+='<button class="linkbtn" data-chadd style="margin-top:8px">➕ '+T("เพิ่มช่องทาง","Add channel","添加渠道","채널 추가")+'</button>';
+ h+='<div class="kv" style="align-items:center;margin-top:12px"><span>'+T("กำไรที่อยากได้ (% ของราคาขาย) ใช้คิดราคาแนะนำ","Target profit (% of price) for suggested prices","目标利润（占售价%），用于建议价","목표 이익 (판매가 대비 %)")+'</span><input data-ctm type="number" min="0" max="90" inputmode="decimal" value="'+(+COST.tm||0)+'" style="margin:0;width:80px;flex:none"></div>';
+ h+='<p class="small" style="margin:8px 0 0">'+T("GP คือส่วนที่แอปส่งอาหาร/แพลตฟอร์มหักจากราคาขาย ตัวเลขแต่ละร้านไม่เท่ากัน แก้ให้ตรงกับสัญญาของร้านได้เลย","GP is the cut a delivery app or platform takes from the price. Rates differ by shop, so edit them to match yours.","GP 是外卖平台从售价中抽取的比例，各店不同，请按你的合同修改。","GP는 배달앱·플랫폼이 판매가에서 떼는 수수료예요. 가게마다 달라요.")+'</p></div>';
+ el.innerHTML=h}
+function cEditor(){var p=CD,h='<div class="card fm"><b>'+(CED==="new"?"➕ "+T("สินค้าใหม่","New product","新商品","새 상품"):"✏️ "+T("แก้ไขสินค้า","Edit product","编辑商品","상품 수정"))+'</b>';
+ h+='<input data-cf="n" maxlength="40" value="'+esc(p.n)+'" placeholder="'+T("ชื่อสินค้า เช่น กะเพราไก่ไข่ดาว","Product name","商品名称","상품 이름")+'">';
+ h+='<div class="kv" style="align-items:center"><span>'+T("ทำครั้งหนึ่งได้กี่ชิ้น/จาน","Units per batch","每批做几份","한 번에 몇 개")+'</span><input data-cf="y" type="number" min="1" inputmode="numeric" value="'+(+p.y||1)+'" style="margin:0;width:90px;flex:none"></div></div>';
+ h+='<h2>🥬 '+T("ต้นทุน (วัตถุดิบ ค่าแพ็ก ค่าแรง)","Costs (ingredients, packaging, labor)","成本（原料、包装、人工）","원가 (재료·포장·인건비)")+'</h2>';
+ h+=p.it.length?'<div class="group">'+p.it.map(function(it,i){return '<div class="row" style="cursor:default"><span class="t"><b>'+esc(it.n)+'</b><span>'+(it.u>0&&it.q>0?T("ซื้อ ","Bought ","买 ","구매 ")+bt(+it.b)+' / '+it.q+' · '+T("ใช้ ","use ","用 ","사용 ")+it.u:T("ต่อครั้งที่ทำ","per batch","每批","배치당"))+'</span></span><b data-nt>'+bt(r2(cItCost(it)))+'</b><button class="linkbtn" data-citdel="'+i+'" style="margin-left:6px">✕</button></div>'}).join("")+'</div>':'<div class="empty">'+T("ยังไม่มีรายการต้นทุน","No costs yet","还没有成本项","원가 항목이 없어요")+'</div>';
+ h+='<div class="card fm"><input id="ci_n" maxlength="40" placeholder="'+T("เช่น หมูสับ, ไข่, กล่อง, ไม้สัก","e.g. pork, eggs, box, teak","如 猪肉、鸡蛋、盒子","예: 돼지고기, 계란, 박스")+'"><input id="ci_b" type="number" min="0" inputmode="decimal" placeholder="'+T("ราคา (บาท) เช่น ซื้อหมู 1 กก. 120","Price (THB), e.g. 1 kg pork 120","价格（泰铢）","가격 (바트)")+'"><div class="two"><input id="ci_q" type="number" min="0" inputmode="decimal" placeholder="'+T("ซื้อมากี่หน่วย","Bought qty, e.g. 1000 (g)","买了多少","구매량")+'"><input id="ci_u" type="number" min="0" inputmode="decimal" placeholder="'+T("ใช้กี่หน่วย","Qty used, e.g. 80","用了多少","사용량")+'"></div><p class="small" style="margin:6px 2px 0">'+T("เช่น หมู 1,000 กรัม 120 บาท ใช้ 80 กรัม → ต้นทุน ฿9.6 · ถ้ารู้ต้นทุนแล้ว ใส่แค่ราคา","If you already know the cost, just fill the price","已知成本只填价格即可","원가를 알면 가격만 입력")+'</p><button class="btn" data-citadd>'+T("เพิ่มต้นทุน","Add cost","添加成本","원가 추가")+'</button></div>';
+ h+='<div class="card"><div class="kv" style="margin:0"><span>'+T("ต้นทุนรวมต่อครั้ง","Total per batch","每批总成本","배치 총원가")+'</span><b id="cs_t" data-nt></b></div><div class="kv"><span>'+T("ต้นทุนต่อชิ้น","Cost per unit","单件成本","개당 원가")+'</span><b id="cs_u" style="font-size:18px;color:var(--pinkd)" data-nt></b></div></div>';
+ h+='<h2>💰 '+T("ราคาขาย และกำไรแต่ละช่องทาง","Price & profit per channel","各渠道售价与利润","채널별 판매가·이익")+'</h2>';
+ h+=COST.ch.map(function(c,i){return '<div class="card"><div class="kv" style="margin:0;align-items:center"><b style="color:var(--ink);font-size:15px">'+esc(c.n)+(+c.g?' <span class="small">(GP '+c.g+'%)</span>':'')+'</b><input data-cpx="'+i+'" type="number" min="0" inputmode="decimal" value="'+((p.px||{})[c.n]||"")+'" placeholder="'+T("ราคาขาย","Price","售价","판매가")+'" style="margin:0;width:120px;flex:none;text-align:right"></div><div id="cr'+i+'"></div></div>'}).join("");
+ h+='<p class="small">'+T("กำไร % คิดจากราคาขาย · ราคาแนะนำคิดให้ได้กำไร ","Profit % is of the price · suggested price targets ","利润%按售价计算 · 建议价目标 ","이익 %는 판매가 기준 · 추천가 목표 ")+(+COST.tm||0)+'% '+T("(แก้ได้ที่หน้ารายการ)","(edit on the list page)","（可在列表页修改）","(목록에서 변경)")+'</p>';
+ h+='<button class="btn" data-csave>💾 '+T("บันทึก","Save","保存","저장")+'</button><button class="btn pbtn2" data-cback>'+T("กลับ","Back","返回","뒤로")+'</button>';
+ if(CED!=="new")h+='<button class="linkbtn '+(CDEL?"jdelc":"")+'" data-cdelp style="margin-top:10px;color:#E0604B">🗑️ '+(CDEL?T("แตะอีกครั้งเพื่อลบสินค้านี้","Tap again to delete","再点一次删除","한 번 더 눌러 삭제"):T("ลบสินค้านี้","Delete product","删除商品","상품 삭제"))+'</button>';
+ return h}
+function cUpd(){if(CED===null||!$("cs_t"))return;var p=CD,t=cTotal(p),u=cUnit(p);$("cs_t").textContent=bt(r2(t));$("cs_u").textContent=bt(r2(u));
+ COST.ch.forEach(function(c,i){var el=$("cr"+i);if(!el)return;var pr=+((p.px||{})[c.n])||0,sg=cSuggest(u,c.g),h='';
+  if(pr>0){var net=cNet(pr,c.g),pf=net-u,col=pf>=0?"#2E9E6A":"#E0604B";h+=(+c.g?'<div class="kv"><span>'+T("โดนหัก GP","GP cut","抽成","수수료")+'</span><b data-nt>−'+bt(r2(pr-net))+'</b></div><div class="kv"><span>'+T("เงินเข้าร้าน","You receive","到手","실수령")+'</span><b data-nt>'+bt(r2(net))+'</b></div>':'')+'<div class="kv"><span>'+(pf>=0?T("กำไร","Profit","利润","이익"):T("ขาดทุน","Loss","亏损","손실"))+'</span><b style="color:'+col+'" data-nt>'+(pf>=0?"+":"−")+bt(Math.abs(r2(pf)))+' · '+pct(pf/pr*100)+'</b></div>'}
+  if(u>0&&sg>0)h+='<div class="kv" style="align-items:center"><span>'+T("ราคาแนะนำ","Suggested","建议价","추천가")+' (≈'+(+COST.tm||0)+'%)</span><button class="linkbtn" data-cuse="'+i+'" data-v="'+sg+'" style="margin:0">'+bt(sg)+' · '+T("ใช้ราคานี้","use","采用","적용")+'</button></div>';
+  el.innerHTML=h})}
+function cOpen(i){CED=i;CDEL=false;CD=i==="new"?{n:"",y:1,it:[],px:{}}:JSON.parse(JSON.stringify(COST.pr[i]));CD.px=CD.px||{};CD.it=CD.it||[];rCost();try{window.scrollTo(0,0)}catch(e){}}
+$("costc").addEventListener("input",function(e){var t=e.target,d=t.dataset;
+ if(d.cf){CD[d.cf]=d.cf=="y"?Math.max(1,+t.value||1):t.value;cUpd();return}
+ if(d.cpx!==undefined){var c=COST.ch[+d.cpx];if(c){if(+t.value>0)CD.px[c.n]=+t.value;else delete CD.px[c.n]}cUpd();return}
+ if(d.chg!==undefined){COST.ch[+d.chg].g=Math.min(90,Math.max(0,+t.value||0));svCost();return}
+ if(d.ctm!==undefined){COST.tm=Math.min(90,Math.max(0,+t.value||0));svCost();return}});
+$("costc").addEventListener("change",function(e){var t=e.target,d=t.dataset;if(d.chn!==undefined){var i=+d.chn,old=COST.ch[i].n,nw=t.value.trim()||old;if(nw!==old){COST.ch[i].n=nw;COST.pr.forEach(function(p){if(p.px&&p.px[old]!=null){p.px[nw]=p.px[old];delete p.px[old]}})}svCost();rCost()}});
+$("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cnew],[data-cedit],[data-citadd],[data-citdel],[data-csave],[data-cback],[data-cdelp],[data-cuse],[data-chadd],[data-chdel]");if(!b)return;var d=b.dataset;
+ if(d.cnew!==undefined){if(!canAdd("cost",COST.pr.length))return;cOpen("new");return}
+ if(d.cedit!==undefined){cOpen(+d.cedit);return}
+ if(d.citadd!==undefined){var n=$("ci_n").value.trim(),bb=+$("ci_b").value,q=+$("ci_q").value,u=+$("ci_u").value;if(!n||!(bb>0)){toast(T("ใส่ชื่อและราคาก่อนนะ","Enter a name and price","请输入名称和价格","이름과 가격을 입력하세요"));return}var it={n:n,b:bb};if(q>0&&u>0){it.q=q;it.u=u}CD.it.push(it);rCost();var x=$("ci_n");if(x)x.focus();return}
+ if(d.citdel!==undefined){CD.it.splice(+d.citdel,1);rCost();return}
+ if(d.cuse!==undefined){var c=COST.ch[+d.cuse];CD.px[c.n]=+d.v;rCost();return}
+ if(d.csave!==undefined){CD.n=String(CD.n||"").trim();if(!CD.n){toast(T("ตั้งชื่อสินค้าก่อนนะ","Name the product first","请先填写商品名称","상품 이름을 입력하세요"));return}
+  if(CED==="new")COST.pr.push(CD);else COST.pr[CED]=CD;svCost();
+  // Keep the shop book's item list in step: in-store price and cost per unit, used when logging a sale.
+  try{var u=cUnit(CD),c0=COST.ch[0],pr=c0?+CD.px[c0.n]||0:0,it2=itemOf(CD.n);if(it2){if(pr)it2.p=pr;it2.c=r2(u)}else ST2.items.push({n:CD.n,p:pr||0,c:r2(u)});svStore()}catch(er){}
+  CED=null;CD=null;rCost();toast(T("บันทึกแล้วจ้า 🧮","Saved 🧮","已保存 🧮","저장됨 🧮"));return}
+ if(d.cback!==undefined){CED=null;CD=null;rCost();return}
+ if(d.cdelp!==undefined){if(!CDEL){CDEL=true;rCost();return}COST.pr.splice(CED,1);svCost();CED=null;CD=null;rCost();toast(T("ลบแล้ว","Deleted","已删除","삭제됨"));return}
+ if(d.chadd!==undefined){COST.ch.push({n:T("ช่องทางใหม่","New channel","新渠道","새 채널"),g:0});svCost();rCost();return}
+ if(d.chdel!==undefined){COST.ch.splice(+d.chdel,1);svCost();rCost();return}});
+
 function stFrom(){var d=new Date();d.setHours(0,0,0,0);if(SP=="w")d.setDate(d.getDate()-6);if(SP=="m")d.setDate(1);return d.getTime()}
 function bt(n){return "฿"+(Math.round(n*100)/100).toLocaleString("th-TH")}
 function itemOf(n){n=String(n).trim().toLowerCase();for(var i=0;i<ST2.items.length;i++)if(ST2.items[i].n.toLowerCase()==n)return ST2.items[i]}
@@ -1685,6 +1751,7 @@ var MENU=[
 ["🏦",["หนี้สิน","Debts","债务","부채"],["แผนปลดหนี้","Payoff plan","还债计划","상환 계획"],"หนี้ ผ่อน debt loan 债 빚",function(){go("p-debt")}],
 ["🪙",["กระปุกออมสิน","Savings jar","存钱罐","저금통"],["หยอดทีละนิด","Save bit by bit","一点点存","조금씩 저축"],"ออม เก็บเงิน กระปุก save jar 存钱 저축",function(){go("p-jar")}],
 ["✈️",["กระปุกเที่ยว","Trip fund","旅行基金","여행 저금통"],["เก็บเงินเที่ยว จองโรงแรม ตั๋ว","Save, book hotels & tickets","存钱、订酒店和票","저축·호텔·티켓 예약"],"เที่ยว ทริป โรงแรม ที่พัก ตั๋ว เครื่องบิน agoda booking klook trip travel hotel 旅行 酒店 여행 호텔",function(){go("p-trip")}],
+["🧮",["คำนวณต้นทุน ราคาขาย","Cost & price calculator","成本与售价计算","원가·판매가 계산"],["ตั้งราคา กำไร GP แอปส่งอาหาร","Pricing, profit, delivery-app GP","定价、利润、外卖抽成","가격·이익·배달앱 수수료"],"ต้นทุน ราคาขาย กำไร gp grab lineman คำนวณ cost price profit 成本 定价 원가 가격",function(){go("p-cost")}],
 ["🏪",["สมุดร้านค้า","Shop book","店铺账本","가게 장부"],["ยอดขาย ต้นทุน กำไร","Sales, costs, profit","销售、成本、利润","매출·원가·이익"],"ร้าน ขาย แม่ค้า พ่อค้า กำไร ต้นทุน shop sell profit 店 卖 가게 판매",function(){go("p-shop")}],
 ["🩺",["ดูแลตามวัย","Care by age","按年龄关怀","연령별 케어"],["เรื่องสุขภาพตามวัย","Health tips for your age","适龄健康提示","나이별 건강 팁"],"สุขภาพ วัย ดูแล health care age 健康 건강",function(){go("care")}],
 ["🛒",["ร้านสุขภาพ","Health shop","健康好物","건강용품"],["เครื่องวัดความดัน กล่องยา","BP monitor, pill box","血压计、药盒","혈압계·약통"],"ซื้อ ของ สุขภาพ เครื่องวัดความดัน shop buy 购买 구매",function(){goScroll("care","#shop")}],
