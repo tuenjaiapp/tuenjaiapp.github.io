@@ -1994,6 +1994,10 @@ window.tpOpen=open;
 })();
 </script>
 <script>
+// Self-update: phones and the LINE in-app browser can keep an old copy of this page. If the server has a newer
+// version, reload once with a fresh URL.
+(function(){var V="202610282129";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
+ setTimeout(function(){fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var V="(\d+)"/);if(m&&m[1]!==V&&m[1]>V){try{sessionStorage.setItem("tj_upd",m[1])}catch(e){}var u=new URL(location.href);u.searchParams.set("v",m[1]);location.replace(u.toString())}}).catch(function(){})},1500)})();
 // Lifetime Shop pack: a small home banner, and a one-time popup on the 3rd visit (never again after closing).
 (function(){
  function owned(){return !!(window.ST&&ST.shopLife)}
@@ -2011,18 +2015,21 @@ window.tpOpen=open;
   return d}
  function fillShop(d){var f=new Date();f.setHours(0,0,0,0);var t0=f.getTime(),sale=0,cost=0;(ST2.tx||[]).forEach(function(t){if(t.d<t0)return;if(t.k=="s"){sale+=t.a;if(t.c!=null)cost+=t.c*t.q}else cost+=t.a});
   var open=(ST2.jobs||[]).filter(function(j){return j.status=="open"}).length,b=function(k,e,l){return '<button data-sh="'+k+'" style="flex:1 1 30%;min-width:0;border:0;border-radius:14px;background:#fff;color:#16352B;font:inherit;font-weight:700;font-size:13px;padding:10px 4px;cursor:pointer;line-height:1.3"><span style="font-size:22px;display:block">'+e+'</span>'+l+'</button>'};
-  var h='<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:16px">🏪 '+T("ร้านค้าของฉัน","My shop","我的店铺","내 가게")+'</b><span style="font-size:13px">'+T("วันนี้ขาย ","Today ","今日 ","오늘 ")+'<b>'+bt(sale)+'</b>'+(sale?' · '+T("กำไร ","profit ","利润 ","이익 ")+'<b>'+bt(sale-cost)+'</b>':'')+'</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'
+  var on=owned()||(typeof shopOk=="function"&&shopOk());
+  var h='<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:16px">🏪 '+T("ร้านค้าของฉัน","My shop","我的店铺","내 가게")+'</b>'+(on?'<span style="font-size:13px">'+T("วันนี้ขาย ","Today ","今日 ","오늘 ")+'<b>'+bt(sale)+'</b>'+(sale?' · '+T("กำไร ","profit ","利润 ","이익 ")+'<b>'+bt(sale-cost)+'</b>':'')+'</span>':'<span style="font-size:12px">'+T("สำหรับแม่ค้า พ่อค้า","For shop owners","店主专用","가게 사장님용")+'</span>')+'</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'
    +b("cost","🧮",T("คำนวณต้นทุน","Costing","成本计算","원가 계산"))+b("shop","📊",T("สมุดร้านค้า","Shop book","店铺账本","가게 장부"))+b("jobs","🧾",T("ออเดอร์","Orders","订单","주문")+(open?' ('+open+')':''))
-   +b("menu","🖼️",T("รูปเมนูราคา","Price menu","价目图","가격 메뉴"))+b("staff","👥",T("พนักงาน","Staff","员工","직원"))+b("sell","➕",T("จดขาย","Log a sale","记销售","판매 기록"))+'</div>';
+   +b("menu","🖼️",T("รูปเมนูราคา","Price menu","价目图","가격 메뉴"))+b("staff","👥",T("พนักงาน","Staff","员工","직원"))+b("sell","➕",T("จดขาย","Log a sale","记销售","판매 기록"))+'</div>'
+   +(owned()?'':'<button data-sh="buy" style="display:flex;width:100%;align-items:center;gap:8px;margin-top:10px;border:0;border-radius:14px;background:#12897A;color:#fff;font:inherit;font-weight:700;padding:10px 12px;cursor:pointer;text-align:left"><span style="flex:1">🔓 '+T("ชุดแม่ค้า ตลอดชีพ ฿"+price(),"Shop pack, lifetime ฿"+price(),"店铺包 终身 ฿"+price(),"가게 팩 평생 ฿"+price())+' <s style="opacity:.7;font-weight:500">฿'+normal()+'</s><br><small style="font-weight:500">'+T("จ่ายครั้งเดียว ไม่มีรายเดือน · ลองฟรีก่อน","Pay once, no monthly fee · try free first","一次付清 无月费 · 可先免费试用","한 번 결제 · 무료 체험")+'</small></span><span>›</span></button>');
   if(d.dataset.h!==h){d.innerHTML=h;d.dataset.h=h}}
  document.addEventListener("click",function(e){var x=e.target.closest("[data-sh]");if(!x)return;var k=x.dataset.sh;
   if(k=="cost"){go("p-cost");try{rCost()}catch(er){}}
   else if(k=="shop"){go("p-shop");try{rStore()}catch(er){}}
   else if(k=="jobs"){go("p-shop");try{rStore()}catch(er){}setTimeout(function(){var h2=[].find.call(document.querySelectorAll("#shopc h2"),function(z){return z.textContent.indexOf("🧾")==0&&z.textContent.indexOf("(")>0});if(h2)h2.scrollIntoView({block:"start"})},120)}
   else if(k=="menu"){go("p-cost");try{rCost();if(COST.pr.length)menuCard();else toast(T("เพิ่มเมนูและราคาก่อนนะ","Add products and prices first","请先添加商品和价格","먼저 상품과 가격을 추가하세요"))}catch(er){}}
+  else if(k=="buy"){go("p-plan");setTimeout(function(){var c=document.querySelector('#planc [data-buy="life"]');if(c)c.scrollIntoView({block:"center"})},150)}
   else if(k=="staff")location.href="https://line.me/R/oaMessage/%40528ggibx/?"+encodeURIComponent("พนักงาน");
   else if(k=="sell"){go("p-shop");try{SFORM="s";rStore();var sn=document.getElementById("s_n");if(sn)sn.focus()}catch(er){}}});
- function upd(){var pg=document.getElementById("home");if(!pg)return;var hero=pg.querySelector(".hero"),b=pg.querySelector(".lifebar"),sc=pg.querySelector(".shopbar"),isS=seller(),want=!owned()&&!hidden()&&!isS;
+ function upd(){var pg=document.getElementById("home");if(!pg)return;var hero=pg.querySelector(".hero"),b=pg.querySelector(".lifebar"),sc=pg.querySelector(".shopbar"),isS=true,want=false;
   if(want&&!b){if(hero&&hero.nextSibling)pg.insertBefore(bar(),hero.nextSibling)}else if(!want&&b)b.remove();
   if(isS){if(!sc){sc=shopCard();if(hero&&hero.nextSibling)pg.insertBefore(sc,hero.nextSibling)}fillShop(sc)}else if(sc)sc.remove()}
  upd();setInterval(upd,2000);
