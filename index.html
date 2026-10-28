@@ -2004,8 +2004,27 @@ window.tpOpen=open;
   d.style.cssText="display:flex;gap:10px;align-items:center;margin:12px 0 4px;padding:12px 14px;border-radius:16px;background:#E6F5EF;color:#16352B;border:1.5px solid rgba(18,137,122,.3);cursor:pointer;line-height:1.35";
   d.innerHTML='<span style="font-size:28px">🏪</span><span style="flex:1;min-width:0"><b>'+T("ชุดแม่ค้า ตลอดชีพ ฿"+price(),"Shop pack, lifetime ฿"+price(),"店铺包 终身 ฿"+price(),"가게 팩 평생 ฿"+price())+'</b> <s style="opacity:.6;font-size:12px">฿'+normal()+'</s><br><small>'+T("คำนวณต้นทุน · สมุดร้าน · ออเดอร์ จ่ายครั้งเดียว","Costing · shop book · orders, pay once","成本 · 账本 · 订单 一次付清","원가 · 장부 · 주문, 한 번 결제")+'</small></span><span style="font-weight:700;color:#12897A">›</span><button aria-label="ปิด" data-lbx style="border:0;background:none;color:#4F7A6C;font-size:18px;padding:4px 2px;cursor:pointer">✕</button>';
   d.addEventListener("click",function(e){if(e.target.closest("[data-lbx]")){try{localStorage.setItem("tj_lifebar","0")}catch(x){}d.remove();return}go("p-plan");setTimeout(function(){var c=document.querySelector('#planc [data-buy="life"]');if(c)c.scrollIntoView({block:"center"})},150)});return d}
- function upd(){var pg=document.getElementById("home");if(!pg)return;var b=pg.querySelector(".lifebar"),want=!owned()&&!hidden();
-  if(want&&!b){var hero=pg.querySelector(".hero");if(hero&&hero.nextSibling)pg.insertBefore(bar(),hero.nextSibling)}else if(!want&&b)b.remove()}
+ // Shop owners (lifetime pack, or Premium already using the shop) get a shortcut card on the home page instead.
+ function seller(){try{return owned()||(typeof shopOk=="function"&&shopOk()&&((ST2.tx||[]).length||(window.COST&&COST.pr.length)||(ST2.jobs||[]).length))}catch(e){return false}}
+ function shopCard(){var d=document.createElement("div");d.className="shopbar";
+  d.style.cssText="margin:12px 0 4px;padding:14px;border-radius:18px;background:#E6F5EF;color:#16352B;border:1.5px solid rgba(18,137,122,.3)";
+  return d}
+ function fillShop(d){var f=new Date();f.setHours(0,0,0,0);var t0=f.getTime(),sale=0,cost=0;(ST2.tx||[]).forEach(function(t){if(t.d<t0)return;if(t.k=="s"){sale+=t.a;if(t.c!=null)cost+=t.c*t.q}else cost+=t.a});
+  var open=(ST2.jobs||[]).filter(function(j){return j.status=="open"}).length,b=function(k,e,l){return '<button data-sh="'+k+'" style="flex:1 1 30%;min-width:0;border:0;border-radius:14px;background:#fff;color:#16352B;font:inherit;font-weight:700;font-size:13px;padding:10px 4px;cursor:pointer;line-height:1.3"><span style="font-size:22px;display:block">'+e+'</span>'+l+'</button>'};
+  var h='<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:16px">🏪 '+T("ร้านค้าของฉัน","My shop","我的店铺","내 가게")+'</b><span style="font-size:13px">'+T("วันนี้ขาย ","Today ","今日 ","오늘 ")+'<b>'+bt(sale)+'</b>'+(sale?' · '+T("กำไร ","profit ","利润 ","이익 ")+'<b>'+bt(sale-cost)+'</b>':'')+'</span></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'
+   +b("cost","🧮",T("คำนวณต้นทุน","Costing","成本计算","원가 계산"))+b("shop","📊",T("สมุดร้านค้า","Shop book","店铺账本","가게 장부"))+b("jobs","🧾",T("ออเดอร์","Orders","订单","주문")+(open?' ('+open+')':''))
+   +b("menu","🖼️",T("รูปเมนูราคา","Price menu","价目图","가격 메뉴"))+b("staff","👥",T("พนักงาน","Staff","员工","직원"))+b("sell","➕",T("จดขาย","Log a sale","记销售","판매 기록"))+'</div>';
+  if(d.dataset.h!==h){d.innerHTML=h;d.dataset.h=h}}
+ document.addEventListener("click",function(e){var x=e.target.closest("[data-sh]");if(!x)return;var k=x.dataset.sh;
+  if(k=="cost"){go("p-cost");try{rCost()}catch(er){}}
+  else if(k=="shop"){go("p-shop");try{rStore()}catch(er){}}
+  else if(k=="jobs"){go("p-shop");try{rStore()}catch(er){}setTimeout(function(){var h2=[].find.call(document.querySelectorAll("#shopc h2"),function(z){return z.textContent.indexOf("🧾")==0&&z.textContent.indexOf("(")>0});if(h2)h2.scrollIntoView({block:"start"})},120)}
+  else if(k=="menu"){go("p-cost");try{rCost();if(COST.pr.length)menuCard();else toast(T("เพิ่มเมนูและราคาก่อนนะ","Add products and prices first","请先添加商品和价格","먼저 상품과 가격을 추가하세요"))}catch(er){}}
+  else if(k=="staff")location.href="https://line.me/R/oaMessage/%40528ggibx/?"+encodeURIComponent("พนักงาน");
+  else if(k=="sell"){go("p-shop");try{SFORM="s";rStore();var sn=document.getElementById("s_n");if(sn)sn.focus()}catch(er){}}});
+ function upd(){var pg=document.getElementById("home");if(!pg)return;var hero=pg.querySelector(".hero"),b=pg.querySelector(".lifebar"),sc=pg.querySelector(".shopbar"),isS=seller(),want=!owned()&&!hidden()&&!isS;
+  if(want&&!b){if(hero&&hero.nextSibling)pg.insertBefore(bar(),hero.nextSibling)}else if(!want&&b)b.remove();
+  if(isS){if(!sc){sc=shopCard();if(hero&&hero.nextSibling)pg.insertBefore(sc,hero.nextSibling)}fillShop(sc)}else if(sc)sc.remove()}
  upd();setInterval(upd,2000);
  // One-time popup.
  var k="tj_lifepop",st={n:0,done:0};try{st=JSON.parse(localStorage.getItem(k)||"null")||st}catch(e){}
