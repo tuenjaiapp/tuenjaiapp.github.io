@@ -1361,7 +1361,7 @@ function cNet(price,c){return price-chFee(price,c)}
 // A product discount (dc %) is applied before the channel's cut, so the list price is raised to cover it.
 function cSuggest(unit,c,p){p=p||{};var pm=p.pm||"mg",pv=p.pv!=null&&p.pv!==""?+p.pv:(+COST.tm||0),g=1-chPct(c)/100,dc=1-(+p.dc||0)/100,cf=+c.cf||0,eff;
  if(g<=0||dc<=0)return 0;
- if(pm=="mu")eff=(unit*(1+pv/100)+cf)/g;else if(pm=="pf")eff=(unit+pv+cf)/g;else{var m=1-pv/100;if(m<=0)return 0;eff=(unit+cf)/(g*m)}
+ if(pm=="mu")eff=(unit*(1+pv/100)+cf)/g;else if(pm=="pf")eff=(unit+pv+cf)/g;else{var m=pv/100;if(g-m<=0)return 0;eff=(unit+cf)/(g-m)}
  return Math.ceil(eff/dc)}
 function pmLabel(p){var pm=(p&&p.pm)||"mg",pv=p&&p.pv!=null&&p.pv!==""?+p.pv:(+COST.tm||0);return pm=="mu"?T("บวกจากทุน ","mark-up ","加成 ","마크업 ")+pv+"%":pm=="pf"?T("กำไร ฿","profit ฿","利润 ฿","이익 ฿")+pv:T("กำไร ","profit ","利润 ","이익 ")+pv+"%"}
 function kindOf(it){return it.k||"m"}
@@ -2049,7 +2049,7 @@ window.tpOpen=open;
 <script>
 // Self-update: phones and the LINE in-app browser can keep an old copy of this page. If the server has a newer
 // version, reload once with a fresh URL.
-(function(){var V="202610282158";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
+(function(){var V="202610282207";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
  setTimeout(function(){fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var V="(\d+)"/);if(m&&m[1]!==V&&m[1]>V){try{sessionStorage.setItem("tj_upd",m[1])}catch(e){}var u=new URL(location.href);u.searchParams.set("v",m[1]);location.replace(u.toString())}}).catch(function(){})},1500)})();
 // Lifetime Shop pack: a small home banner, and a one-time popup on the 3rd visit (never again after closing).
 (function(){
