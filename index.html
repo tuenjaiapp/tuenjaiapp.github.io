@@ -561,7 +561,7 @@ function idLike(num){var d=String(num).split(".")[0];return d.indexOf(",")<0&&(d
 // Entries with impossible amounts (a phone or parcel number logged as money): shown with a one-tap fix.
 function oddTx(){var o=[];tx.forEach(function(t,i){if(t&&Math.abs(t[2])>=10000000)o.push(i)});return o}
 function oddHtml(){var o=oddTx();if(!o.length)return "";return '<div class="card" style="border:2px solid #E0604B;margin-top:0"><b style="color:#E0604B">⚠️ '+T("พบรายการเงินสูงผิดปกติ "+o.length+" รายการ","Found "+o.length+" entry with an unusual amount","发现 "+o.length+" 条金额异常的记录",o.length+"개의 비정상 금액 발견")+'</b><p class="small" style="margin:4px 0 8px">'+T("อาจเป็นเบอร์โทรหรือเลขพัสดุที่ถูกจดเป็นเงิน แตะเพื่อแก้หรือลบ","Probably a phone or parcel number logged as money. Tap to fix or delete","可能把电话或单号记成了金额，点按修改或删除","전화번호·송장번호가 금액으로 기록된 것 같아요. 눌러서 수정/삭제")+'</p>'+o.map(function(i){var t=tx[i],d=new Date(t[3]||Date.now());return '<button class="row" data-ei="'+i+'" style="width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit"><span class="ico i1">'+t[0]+'</span><span class="t"><b>'+esc(t[1])+'</b><span>'+d.getDate()+'/'+(d.getMonth()+1)+'</span></span><b class="neg">'+(t[2]<0?"−":"+")+fmt(t[2])+'</b></button>'}).join("")+'</div>'}
-function spentMonth(mk){var o={_:0};tx.forEach(function(t){if(t[2]<0&&mKey(t[3])==mk){o[t[4]]=(o[t[4]]||0)-t[2];o._-=t[2]}});return o}
+function spentMonth(mk){var o={_:0};tx.forEach(function(t){if(t[2]<0&&t[2]>-10000000&&mKey(t[3])==mk){o[t[4]]=(o[t[4]]||0)-t[2];o._-=t[2]}});return o}
 
 // ---------- home ----------
 render=function(){var mk=mKey(Date.now()),i=0,e=0;tx.forEach(function(t){if(mKey(t[3])==mk){t[2]>0?i+=t[2]:e-=t[2]}});
@@ -576,6 +576,7 @@ var sp=spentMonth(mKey(Date.now()))._,tot=budTotal(),m;
 if(hide)m=T("ซ่อนยอดไว้ให้แล้วนะ 🙈","Amounts are hidden 🙈","金额已隐藏 🙈","금액을 숨겼어요 🙈");
 else if(tot)m=tot-sp>=0?T("งบเดือนนี้เหลือ "+fmt(tot-sp)+" นะ 🐥","You have "+fmt(tot-sp)+" left in this month's budget 🐥","本月预算还剩 "+fmt(tot-sp)+" 🐥","이번 달 예산이 "+fmt(tot-sp)+" 남았어요 🐥"):T("เดือนนี้ใช้เกินงบไป "+fmt(sp-tot)+" แล้วนะ 🐥","You're "+fmt(sp-tot)+" over budget this month 🐥","本月已超预算 "+fmt(sp-tot)+" 🐥","이번 달 예산을 "+fmt(sp-tot)+" 넘었어요 🐥");
 else m=sp?T("เดือนนี้ใช้ไปแล้ว "+fmt(sp)+" ลองตั้งงบดูไหม 🧾","You've spent "+fmt(sp)+" this month. Want to set a budget? 🧾","本月已花 "+fmt(sp)+"，要设个预算吗？🧾","이번 달 "+fmt(sp)+" 썼어요. 예산을 정해 볼까요? 🧾"):T("ยังไม่ได้จดเลย จดสักรายการไหม 🧾","Nothing logged yet. Add one? 🧾","还没记账，记一笔吧 🧾","아직 기록이 없어요. 하나 적어 볼까요? 🧾");
+if(!hide&&oddTx().length)m=T("⚠️ เจอยอดเงินผิดปกติ "+oddTx().length+" รายการ (น่าจะเป็นเลขพัสดุ/เบอร์โทร) ยังไม่นับรวมให้ กด \"งบประมาณ\" หรือ \"รายการทั้งหมด\" เพื่อลบนะ","⚠️ Found "+oddTx().length+" unusual amount (likely a parcel/phone number). Not counted — open Budget or All entries to delete it","⚠️ 发现 "+oddTx().length+" 条异常金额（可能是单号/电话），暂不计入，请到预算或全部记录删除","⚠️ 비정상 금액 "+oddTx().length+"건 (송장/전화번호 같아요). 합계에서 제외했어요 — 예산이나 전체 기록에서 삭제하세요");
 $("b-money").textContent=m;
 $("b-me").textContent=T("สู้ๆ นะ วันนี้ก็ดูแลตัวเองด้วยน้า 🔥","Keep going, and take care of yourself today 🔥","加油，今天也要照顾好自己哦 🔥","힘내요, 오늘도 자신을 잘 챙겨요 🔥")};
 function budMsg(c){var mk=mKey(Date.now()),s=spentMonth(mk),b=+BUD.cats[c],n=cn(c);
@@ -2097,7 +2098,7 @@ window.tpOpen=open;
 <script>
 // Self-update: phones and the LINE in-app browser can keep an old copy of this page. If the server has a newer
 // version, reload once with a fresh URL.
-(function(){var V="202610290022";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
+(function(){var V="202610290024";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
  setTimeout(function(){fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var V="(\d+)"/);if(m&&m[1]!==V&&m[1]>V){try{sessionStorage.setItem("tj_upd",m[1])}catch(e){}var u=new URL(location.href);u.searchParams.set("v",m[1]);location.replace(u.toString())}}).catch(function(){})},1500)})();
 // Lifetime Shop pack: a small home banner, and a one-time popup on the 3rd visit (never again after closing).
 (function(){
@@ -2339,5 +2340,16 @@ try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปล
 // Any chick image added after start-up (re-rendered tiles, new pages) gets the mascot picture too.
 (function(){function fill(r){(r.querySelectorAll?r:document).querySelectorAll('img[data-chick]').forEach(function(i){if(window.CK&&i.getAttribute("src")!==CK)i.src=CK})}
  fill(document);try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1){if(n.matches&&n.matches('img[data-chick]'))fill(n.parentNode||document);else fill(n)}})})}).observe(document.body,{childList:true,subtree:true})}catch(e){}})();
+</script>
+<script>// ---------- back button: return to the page you came from ----------
+(function(){var ST=[],NOP=0,cur=function(){var p=document.querySelector(".page.on");return p?p.id:"home"};
+ var g0=window.go;window.go=function(t){var c=cur();if(!NOP&&t!==c){ST.push(c);if(ST.length>30)ST.shift();try{history.pushState({tj:1},"")}catch(e){}}g0(t)};
+ try{go=window.go}catch(e){}
+ function inner(){var c=cur();if(c=="p-cost"&&window.CD){CED=null;CD=null;rCost();scrollTo(0,0);return true}return false}
+ function back(def){if(inner())return true;var prev=ST.pop();if(!prev&&def)prev=def;if(!prev)return false;NOP=1;try{g0(prev)}finally{NOP=0}return true}
+ document.addEventListener("click",function(e){var b=e.target.closest(".page .back");if(!b)return;e.preventDefault();e.stopImmediatePropagation();var hadInner=window.CD&&cur()=="p-cost";back(b.dataset.t);if(!hadInner){try{history.back()}catch(er){}SKIP=1}},true);
+ var SKIP=0;
+ window.addEventListener("popstate",function(){if(SKIP){SKIP=0;return}var wasInner=cur()=="p-cost"&&window.CD;if(back()){if(wasInner)try{history.pushState({tj:1},"")}catch(e){}}});
+})();
 </script>
 </body></html>
