@@ -1367,7 +1367,7 @@ function pct(n){return (Math.round(n*10)/10).toLocaleString("th-TH")+"%"}
 function rCost(){$("costh").textContent=T("คำนวณต้นทุน ราคาขาย","Cost & price calculator","成本与售价计算","원가·판매가 계산");var el=$("costc"),h='';
  if(CED!==null){el.innerHTML=cEditor();cUpd();return}
  h+='<div class="say">'+chick()+'<div class="bub">'+T("ใส่ต้นทุนวัตถุดิบ แล้วดูว่าขายราคาเท่าไหร่ถึงได้กำไร ทั้งหน้าร้านและแอปที่หัก GP 🧮","Add ingredient costs and see which price makes a profit, in store and on apps that take a GP cut 🧮","填入原料成本，看看定价多少才赚钱，门店和抽成平台都能算 🧮","재료 원가를 넣으면 매장과 수수료 앱에서 이익이 나는 가격을 알려드려요 🧮")+'</div></div>';
- h+='<button class="btn" data-cnew style="margin-top:4px">➕ '+T("เพิ่มสินค้า / เมนู","Add a product","添加商品","상품 추가")+'</button>';if(COST.pr.length)h+='<button class="btn pbtn2" data-cmenu style="margin-top:8px">🖼️ '+T("ทำรูปเมนูราคา ส่งลูกค้า/โพสต์","Make a price-menu picture","生成价目表图片","가격 메뉴 이미지 만들기")+'</button>';
+ h+='<button class="btn" data-cnew style="margin-top:4px">➕ '+T("เพิ่มสินค้า / เมนู","Add a product","添加商品","상품 추가")+'</button>';if(COST.pr.length)h+='<div class="two" style="margin-top:8px"><button class="btn pbtn2" data-cmenu style="margin:0">🖼️ '+T("รูปเมนูราคา","Price menu","价目图","가격 메뉴")+'</button><button class="btn pbtn2" data-cxls style="margin:0">📥 '+T("ส่งออก Excel","Export Excel","导出 Excel","엑셀 내보내기")+'</button></div>';
  if(!COST.pr.length)h+='<div class="empty">'+T("ยังไม่มีสินค้า ลองเพิ่มเมนูแรก เช่น กะเพราไก่ หรือ โต๊ะหมู่ 9","No products yet. Try your first one","还没有商品，先加一个吧","아직 상품이 없어요. 첫 상품을 추가해 보세요")+'</div>';
  else h+='<div class="group">'+COST.pr.map(function(p,i){var u=cUnit(p),c0=COST.ch[0],pr=c0?+((p.px||{})[c0.n])||0:0,pf=pr?cNet(pr,c0)-u:null;
   return '<button class="row" data-cedit="'+i+'" style="width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit">'+(p.img?'<img src="'+p.img+'" alt="" style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none">':'<span class="ico i'+(i%4+1)+'">🧮</span>')+'<span class="t"><b>'+esc(p.n)+(p.code?' <span class="small">'+esc(p.code)+'</span>':'')+'</b><span>'+T("ต้นทุน/ชิ้น ","Cost each ","单件成本 ","개당 원가 ")+bt(r2(u))+(pr?' · '+esc(c0.n)+' '+bt(pr):'')+'</span></span>'+(pf!=null?'<b class="'+(pf>=0?"pos":"neg")+'" data-nt>'+(pf>=0?"+":"−")+bt(Math.abs(r2(pf)))+'</b>':'<span class="small">'+T("ยังไม่ตั้งราคา","No price yet","未定价","가격 없음")+'</span>')+'</button>'}).join("")+'</div>';
@@ -1433,7 +1433,7 @@ $("costc").addEventListener("input",function(e){var t=e.target,d=t.dataset;
  if(d.chcf!==undefined){COST.ch[+d.chcf].cf=Math.max(0,+t.value||0);svCost();return}
  if(d.ctm!==undefined){COST.tm=Math.min(90,Math.max(0,+t.value||0));svCost();return}});
 $("costc").addEventListener("change",function(e){var t=e.target,d=t.dataset;if(d.cimg!==undefined&&t.files&&t.files[0]){cImg(t.files[0]);return}if(d.lb!==undefined||d.cmu!==undefined){cSyncItems();rCost();return}if(d.chn!==undefined){var i=+d.chn,old=COST.ch[i].n,nw=t.value.trim()||old;if(nw!==old){COST.ch[i].n=nw;COST.pr.forEach(function(p){if(p.px&&p.px[old]!=null){p.px[nw]=p.px[old];delete p.px[old]}})}svCost();rCost()}});
-$("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cnew],[data-cedit],[data-citadd],[data-citdel],[data-csave],[data-cback],[data-cdelp],[data-cuse],[data-chadd],[data-chdel],[data-ohadd],[data-ohdel],[data-lbdel],[data-cmenu],[data-ckind],[data-cpm],[data-cimgdel]");if(!b)return;var d=b.dataset;
+$("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cnew],[data-cedit],[data-citadd],[data-citdel],[data-csave],[data-cback],[data-cdelp],[data-cuse],[data-chadd],[data-chdel],[data-ohadd],[data-ohdel],[data-lbdel],[data-cmenu],[data-ckind],[data-cpm],[data-cimgdel],[data-cxls]");if(!b)return;var d=b.dataset;
  if(d.cnew!==undefined){if(!canAdd("cost",COST.pr.length))return;cOpen("new");return}
  if(d.cedit!==undefined){cOpen(+d.cedit);return}
  if(d.citadd!==undefined){var n=$("ci_n").value.trim(),bb=+$("ci_b").value,q=$("ci_q")?+$("ci_q").value:0,u=$("ci_u")?+$("ci_u").value:0;
@@ -1450,6 +1450,7 @@ $("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cn
  if(d.cback!==undefined){CED=null;CD=null;rCost();return}
  if(d.cdelp!==undefined){if(!CDEL){CDEL=true;rCost();return}COST.pr.splice(CED,1);svCost();CED=null;CD=null;rCost();toast(T("ลบแล้ว","Deleted","已删除","삭제됨"));return}
  if(d.cmenu!==undefined){menuCard();return}
+ if(d.cxls!==undefined){costCsv();return}
  if(d.ckind!==undefined){CKIND=d.ckind;rCost();var xx=$("ci_n");if(xx)xx.focus();return}
  if(d.cpm!==undefined){if(CD.pm!==d.cpm){CD.pm=d.cpm;CD.pv=d.cpm=="mg"?(+COST.tm||0):d.cpm=="mu"?50:10}rCost();return}
  if(d.cimgdel!==undefined){delete CD.img;rCost();return}
@@ -1496,6 +1497,19 @@ function mcShare(){var cv=window.MCCV;if(!cv)return;cv.toBlob(function(b){try{va
   var a=document.createElement("a");a.href=MCURL;a.download="menu.png";document.body.appendChild(a);a.click();a.remove();toast(T("ถ้าไม่ได้ไฟล์ กดค้างที่รูปแล้วเลือกบันทึก","If nothing saved, long-press the picture","若未保存，请长按图片","저장 안 되면 이미지를 길게 누르세요"))},"image/png")}
 // After an ingredient price or overhead changes, refresh the shop book's cost per unit for every product.
 function cImg(f){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var S=240,sc=Math.min(1,S/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*sc);cv.height=Math.round(im.height*sc);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);if(CD){CD.img=cv.toDataURL("image/jpeg",.72);rCost()}};im.src=r.result};r.readAsDataURL(f)}
+// Spreadsheet export (CSV with BOM so Excel and Google Sheets show Thai): one block per product plus a summary table.
+function costCsv(){var q=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'},L=[],n2=function(v){return (Math.round(v*100)/100).toFixed(2)};
+ L.push([T("สรุปต้นทุนและราคาขาย","Cost & price summary","成本与售价汇总","원가·판매가 요약"),new Date().toLocaleDateString("th-TH")].map(q).join(","));
+ L.push([T("สินค้า","Product","商品","상품"),T("รหัส","Code","编号","코드"),T("ต้นทุน/ชิ้น","Unit cost","单件成本","개당 원가")].concat(COST.ch.map(function(c){return c.n+" "+T("ราคา","price","售价","가격")})).concat(COST.ch.map(function(c){return c.n+" "+T("กำไร","profit","利润","이익")})).map(q).join(","));
+ COST.pr.forEach(function(p){var u=cUnit(p),dc=1-(+p.dc||0)/100;L.push([p.n,p.code||"",n2(u)].concat(COST.ch.map(function(c){var v=+((p.px||{})[c.n])||0;return v?n2(v):""})).concat(COST.ch.map(function(c){var v=+((p.px||{})[c.n])||0;return v?n2(cNet(v*dc,c)-u):""})).map(q).join(","))});
+ COST.pr.forEach(function(p){L.push("");L.push([p.n,T("ทำได้ ","yield ","产量 ","수량 ")+(+p.y||1)].map(q).join(","));L.push([T("ประเภท","Type","类型","유형"),T("รายการ","Item","项目","항목"),T("ต้นทุนต่อครั้ง","Cost per batch","每批成本","배치 원가")].map(q).join(","));
+  (p.it||[]).forEach(function(it){L.push([{m:T("วัตถุดิบ","Material","原料","재료"),l:T("ค่าแรง","Labor","人工","인건비"),o:T("อื่นๆ","Other","其他","기타")}[kindOf(it)],it.n,n2(cItCost(it))].map(q).join(","))});
+  if(p.oh!==false&&ohUnit()>0)L.push([T("ต้นทุนแฝง","Overheads","隐性成本","간접비"),T("ต่อชิ้น","per unit","每份","개당"),n2(ohUnit())].map(q).join(","));
+  L.push([T("ต้นทุนต่อชิ้น","Unit cost","单件成本","개당 원가"),"",n2(cUnit(p))].map(q).join(","))});
+ if(COST.oh.length){L.push("");L.push(q(T("ค่าใช้จ่ายคงที่ต่อเดือน","Monthly fixed costs","每月固定成本","월 고정비")));COST.oh.forEach(function(o){L.push([o.n,n2(+o.a)].map(q).join(","))})}
+ var csv="\ufeff"+L.join("\r\n"),name="tuenjai-cost-"+new Date().toISOString().slice(0,10)+".csv",blob=new Blob([csv],{type:"text/csv"});
+ try{var f=new File([blob],name,{type:"text/csv"});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){});return}}catch(e){}
+ var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast(T("ส่งออกไฟล์แล้ว เปิดด้วย Excel หรือ Google Sheets ได้","Exported. Open it in Excel or Google Sheets","已导出，可用 Excel 或 Google 表格打开","내보냈어요. 엑셀이나 구글 시트로 열 수 있어요"))}
 function cSyncItems(){try{COST.pr.forEach(function(p){var it2=itemOf(p.n);if(it2)it2.c=r2(cUnit(p))});svStore()}catch(e){}}
 
 function stFrom(){var d=new Date();d.setHours(0,0,0,0);if(SP=="w")d.setDate(d.getDate()-6);if(SP=="m")d.setDate(1);return d.getTime()}
@@ -1998,7 +2012,7 @@ window.tpOpen=open;
 <script>
 // Self-update: phones and the LINE in-app browser can keep an old copy of this page. If the server has a newer
 // version, reload once with a fresh URL.
-(function(){var V="202610282140";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
+(function(){var V="202610282143";try{if(sessionStorage.getItem("tj_upd")===V)return}catch(e){}
  setTimeout(function(){fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var V="(\d+)"/);if(m&&m[1]!==V&&m[1]>V){try{sessionStorage.setItem("tj_upd",m[1])}catch(e){}var u=new URL(location.href);u.searchParams.set("v",m[1]);location.replace(u.toString())}}).catch(function(){})},1500)})();
 // Lifetime Shop pack: a small home banner, and a one-time popup on the 3rd visit (never again after closing).
 (function(){
