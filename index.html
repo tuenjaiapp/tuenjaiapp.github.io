@@ -1356,7 +1356,7 @@ function pct(n){return (Math.round(n*10)/10).toLocaleString("th-TH")+"%"}
 function rCost(){$("costh").textContent=T("คำนวณต้นทุน ราคาขาย","Cost & price calculator","成本与售价计算","원가·판매가 계산");var el=$("costc"),h='';
  if(CED!==null){el.innerHTML=cEditor();cUpd();return}
  h+='<div class="say">'+chick()+'<div class="bub">'+T("ใส่ต้นทุนวัตถุดิบ แล้วดูว่าขายราคาเท่าไหร่ถึงได้กำไร ทั้งหน้าร้านและแอปที่หัก GP 🧮","Add ingredient costs and see which price makes a profit, in store and on apps that take a GP cut 🧮","填入原料成本，看看定价多少才赚钱，门店和抽成平台都能算 🧮","재료 원가를 넣으면 매장과 수수료 앱에서 이익이 나는 가격을 알려드려요 🧮")+'</div></div>';
- h+='<button class="btn" data-cnew style="margin-top:4px">➕ '+T("เพิ่มสินค้า / เมนู","Add a product","添加商品","상품 추가")+'</button>';
+ h+='<button class="btn" data-cnew style="margin-top:4px">➕ '+T("เพิ่มสินค้า / เมนู","Add a product","添加商品","상품 추가")+'</button>';if(COST.pr.length)h+='<button class="btn pbtn2" data-cmenu style="margin-top:8px">🖼️ '+T("ทำรูปเมนูราคา ส่งลูกค้า/โพสต์","Make a price-menu picture","生成价目表图片","가격 메뉴 이미지 만들기")+'</button>';
  if(!COST.pr.length)h+='<div class="empty">'+T("ยังไม่มีสินค้า ลองเพิ่มเมนูแรก เช่น กะเพราไก่ หรือ โต๊ะหมู่ 9","No products yet. Try your first one","还没有商品，先加一个吧","아직 상품이 없어요. 첫 상품을 추가해 보세요")+'</div>';
  else h+='<div class="group">'+COST.pr.map(function(p,i){var u=cUnit(p),c0=COST.ch[0],pr=c0?+((p.px||{})[c0.n])||0:0,pf=pr?cNet(pr,c0.g)-u:null;
   return '<button class="row" data-cedit="'+i+'" style="width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit"><span class="ico i'+(i%4+1)+'">🧮</span><span class="t"><b>'+esc(p.n)+'</b><span>'+T("ต้นทุน/ชิ้น ","Cost each ","单件成本 ","개당 원가 ")+bt(r2(u))+(pr?' · '+esc(c0.n)+' '+bt(pr):'')+'</span></span>'+(pf!=null?'<b class="'+(pf>=0?"pos":"neg")+'" data-nt>'+(pf>=0?"+":"−")+bt(Math.abs(r2(pf)))+'</b>':'<span class="small">'+T("ยังไม่ตั้งราคา","No price yet","未定价","가격 없음")+'</span>')+'</button>'}).join("")+'</div>';
@@ -1401,7 +1401,7 @@ $("costc").addEventListener("input",function(e){var t=e.target,d=t.dataset;
  if(d.chg!==undefined){COST.ch[+d.chg].g=Math.min(90,Math.max(0,+t.value||0));svCost();return}
  if(d.ctm!==undefined){COST.tm=Math.min(90,Math.max(0,+t.value||0));svCost();return}});
 $("costc").addEventListener("change",function(e){var t=e.target,d=t.dataset;if(d.lb!==undefined||d.cmu!==undefined){cSyncItems();rCost();return}if(d.chn!==undefined){var i=+d.chn,old=COST.ch[i].n,nw=t.value.trim()||old;if(nw!==old){COST.ch[i].n=nw;COST.pr.forEach(function(p){if(p.px&&p.px[old]!=null){p.px[nw]=p.px[old];delete p.px[old]}})}svCost();rCost()}});
-$("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cnew],[data-cedit],[data-citadd],[data-citdel],[data-csave],[data-cback],[data-cdelp],[data-cuse],[data-chadd],[data-chdel],[data-ohadd],[data-ohdel],[data-lbdel]");if(!b)return;var d=b.dataset;
+$("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cnew],[data-cedit],[data-citadd],[data-citdel],[data-csave],[data-cback],[data-cdelp],[data-cuse],[data-chadd],[data-chdel],[data-ohadd],[data-ohdel],[data-lbdel],[data-cmenu]");if(!b)return;var d=b.dataset;
  if(d.cnew!==undefined){if(!canAdd("cost",COST.pr.length))return;cOpen("new");return}
  if(d.cedit!==undefined){cOpen(+d.cedit);return}
  if(d.citadd!==undefined){var n=$("ci_n").value.trim(),bb=+$("ci_b").value,q=+$("ci_q").value,u=+$("ci_u").value;if(!n||!(bb>0)){toast(T("ใส่ชื่อและราคาก่อนนะ","Enter a name and price","请输入名称和价格","이름과 가격을 입력하세요"));return}var it={n:n,b:bb};if(q>0&&u>0){var L=libByName(n);if(L){L.b=bb;L.q=q}else{L={id:"l"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),n:n,b:bb,q:q};COST.lib.push(L)}svCost();it={n:n,l:L.id,u:u}}CD.it.push(it);rCost();var x=$("ci_n");if(x)x.focus();return}
@@ -1414,12 +1414,48 @@ $("costc").addEventListener("click",function(e){var b=e.target.closest("[data-cn
   CED=null;CD=null;rCost();toast(T("บันทึกแล้วจ้า 🧮","Saved 🧮","已保存 🧮","저장됨 🧮"));return}
  if(d.cback!==undefined){CED=null;CD=null;rCost();return}
  if(d.cdelp!==undefined){if(!CDEL){CDEL=true;rCost();return}COST.pr.splice(CED,1);svCost();CED=null;CD=null;rCost();toast(T("ลบแล้ว","Deleted","已删除","삭제됨"));return}
+ if(d.cmenu!==undefined){menuCard();return}
  if(d.ohadd!==undefined){var on=$("oh_n").value.trim(),oa=+$("oh_a").value;if(!on||!(oa>0)){toast(T("ใส่ชื่อและยอดต่อเดือนก่อนนะ","Enter a name and monthly amount","请输入名称和每月金额","이름과 월 금액을 입력하세요"));return}COST.oh.push({n:on,a:oa});svCost();cSyncItems();rCost();return}
  if(d.ohdel!==undefined){COST.oh.splice(+d.ohdel,1);svCost();cSyncItems();rCost();return}
  if(d.lbdel!==undefined){COST.lib.splice(+d.lbdel,1);svCost();rCost();return}
  if(d.chadd!==undefined){COST.ch.push({n:T("ช่องทางใหม่","New channel","新渠道","새 채널"),g:0});svCost();rCost();return}
  if(d.chdel!==undefined){COST.ch.splice(+d.chdel,1);svCost();rCost();return}});
 
+// Price-menu picture: products and prices for one channel, drawn on a canvas to save or share.
+var MCH=0,MTH=0,MSHOP="";
+function menuCard(){var ov=$("mcov");if(!ov){ov=document.createElement("div");ov.id="mcov";ov.className="ov";ov.style.cssText="display:none;z-index:9998;align-items:flex-start;overflow:auto;padding:16px 0";document.body.appendChild(ov);
+  ov.addEventListener("click",function(e){var b=e.target.closest("[data-mch],[data-mth],[data-mclose],[data-mshare]");if(e.target===ov){ov.style.display="none";return}if(!b)return;if(b.dataset.mch!==undefined)MCH=+b.dataset.mch;if(b.dataset.mth!==undefined)MTH=+b.dataset.mth;if(b.dataset.mclose!==undefined){ov.style.display="none";return}if(b.dataset.mshare!==undefined){mcShare();return}mcDraw()});
+  ov.addEventListener("input",function(e){if(e.target.id=="mcshop"){MSHOP=e.target.value;try{localStorage.setItem("tj_mshop",MSHOP)}catch(x){}mcPaint()}})}
+ try{MSHOP=MSHOP||localStorage.getItem("tj_mshop")||""}catch(x){}
+ ov.style.display="flex";mcDraw()}
+var MTHEMES=[{bg:"#FFF4D6",card:"#FFFFFF",ink:"#3A2A1A",acc:"#E8930C",sub:"#8A6F52"},{bg:"#E6F5EF",card:"#FFFFFF",ink:"#16352B",acc:"#12897A",sub:"#4F7A6C"},{bg:"#2B2118",card:"#3A2D21",ink:"#FFF4E2",acc:"#F2B544",sub:"#D9C2A0"},{bg:"#FFEFF3",card:"#FFFFFF",ink:"#4A2030",acc:"#E0567A",sub:"#9A6276"}];
+function mcDraw(){var ov=$("mcov"),ch=COST.ch[MCH]||COST.ch[0];
+ var h='<div class="ovc" style="max-width:440px;width:calc(100% - 32px);margin:auto"><b style="font-size:18px">🖼️ '+T("รูปเมนูราคา","Price menu","价目表","가격 메뉴")+'</b>'
+  +'<input id="mcshop" maxlength="30" value="'+esc(MSHOP)+'" placeholder="'+T("ชื่อร้าน (ไม่ใส่ก็ได้)","Shop name (optional)","店名（可不填）","가게 이름 (선택)")+'" style="margin-top:8px">'
+  +'<div class="small" style="margin:8px 0 4px">'+T("ราคาของช่องทาง","Prices from","价格来源","가격 채널")+'</div><div class="chips" style="flex-wrap:wrap">'+COST.ch.map(function(c,i){return '<button data-mch="'+i+'" class="'+(i==MCH?"on":"")+'">'+esc(c.n)+'</button>'}).join("")+'</div>'
+  +'<div class="chips" style="margin-top:8px">'+MTHEMES.map(function(t,i){return '<button data-mth="'+i+'" class="'+(i==MTH?"on":"")+'" style="background:'+t.bg+';color:'+t.ink+';border-color:'+t.acc+'">●</button>'}).join("")+'</div>'
+  +'<img id="mcimg" alt="" style="width:100%;border-radius:12px;margin-top:10px;display:block">'
+  +'<p class="small" style="margin:6px 0">'+T("กดค้างที่รูปเพื่อบันทึก หรือกดแชร์","Long-press the picture to save, or tap Share","长按图片保存，或点分享","이미지를 길게 눌러 저장하거나 공유")+'</p>'
+  +'<button class="btn" data-mshare style="margin:0">📤 '+T("แชร์ / บันทึกรูป","Share / save","分享 / 保存","공유 / 저장")+'</button><button class="btn pbtn2" data-mclose style="margin-top:8px">'+T("ปิด","Close","关闭","닫기")+'</button></div>';
+ ov.innerHTML=h;mcPaint()}
+function mcPaint(){var ch=COST.ch[MCH]||COST.ch[0],th=MTHEMES[MTH],items=COST.pr.map(function(p){return {n:p.n,v:+((p.px||{})[ch.n])||0}}).filter(function(x){return x.v>0});
+ var W=1080,pad=70,rowH=96,top=MSHOP?300:230,H=Math.max(1080,top+items.length*rowH+200),cv=document.createElement("canvas");cv.width=W;cv.height=H;var g=cv.getContext("2d");
+ var F='"Mitr","IBM Plex Sans Thai","Noto Sans Thai",sans-serif';
+ g.fillStyle=th.bg;g.fillRect(0,0,W,H);
+ g.fillStyle=th.acc;g.globalAlpha=.12;g.beginPath();g.arc(W-60,40,260,0,7);g.fill();g.beginPath();g.arc(30,H-30,200,0,7);g.fill();g.globalAlpha=1;
+ g.textAlign="center";g.fillStyle=th.ink;
+ if(MSHOP){g.font="600 72px "+F;g.fillText(MSHOP,W/2,150);g.font="500 40px "+F;g.fillStyle=th.acc;g.fillText(T("เมนู & ราคา","Menu & prices","菜单与价格","메뉴 & 가격")+(MCH?" · "+ch.n:""),W/2,220)}
+ else{g.font="600 72px "+F;g.fillText(T("เมนู & ราคา","Menu & prices","菜单与价格","메뉴 & 가격"),W/2,150);if(MCH){g.font="500 40px "+F;g.fillStyle=th.acc;g.fillText(ch.n,W/2,205)}}
+ var y=top;g.fillStyle=th.card;rr(g,pad-20,y-30,W-2*(pad-20),items.length*rowH+40,36);g.fill();
+ items.forEach(function(x,i){var cy=y+i*rowH+50;g.textAlign="left";g.fillStyle=th.ink;g.font="500 44px "+F;var nm=x.n;while(g.measureText(nm).width>W-2*pad-260&&nm.length>2)nm=nm.slice(0,-2)+"…";g.fillText(nm,pad+10,cy);
+  g.textAlign="right";g.fillStyle=th.acc;g.font="600 48px "+F;g.fillText("฿"+x.v.toLocaleString("th-TH"),W-pad-10,cy);
+  if(i<items.length-1){g.strokeStyle=th.sub;g.globalAlpha=.25;g.setLineDash([6,10]);g.beginPath();g.moveTo(pad+10,cy+40);g.lineTo(W-pad-10,cy+40);g.stroke();g.setLineDash([]);g.globalAlpha=1}});
+ if(!items.length){g.textAlign="center";g.fillStyle=th.sub;g.font="500 40px "+F;g.fillText(T("ยังไม่ได้ใส่ราคาของช่องทางนี้","No prices set for this channel","此渠道尚未定价","이 채널 가격 없음"),W/2,y+60)}
+ g.textAlign="center";g.fillStyle=th.sub;g.font="400 30px "+F;g.fillText(T("ทำด้วยแอปเตือนใจ · LINE @528ggibx","Made with Tuenjai · LINE @528ggibx","用 Tuenjai 制作 · LINE @528ggibx","Tuenjai로 제작 · LINE @528ggibx"),W/2,H-60);
+ window.MCURL=cv.toDataURL("image/png");window.MCCV=cv;var im=$("mcimg");if(im)im.src=MCURL}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function mcShare(){var cv=window.MCCV;if(!cv)return;cv.toBlob(function(b){try{var f=new File([b],"menu.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){});return}}catch(e){}
+  var a=document.createElement("a");a.href=MCURL;a.download="menu.png";document.body.appendChild(a);a.click();a.remove();toast(T("ถ้าไม่ได้ไฟล์ กดค้างที่รูปแล้วเลือกบันทึก","If nothing saved, long-press the picture","若未保存，请长按图片","저장 안 되면 이미지를 길게 누르세요"))},"image/png")}
 // After an ingredient price or overhead changes, refresh the shop book's cost per unit for every product.
 function cSyncItems(){try{COST.pr.forEach(function(p){var it2=itemOf(p.n);if(it2)it2.c=r2(cUnit(p))});svStore()}catch(e){}}
 
@@ -1534,7 +1570,7 @@ function syncSoon(ms){if(!ST.lineTok||!apiBase())return;clearTimeout(syT);syT=se
  apiCall("POST","/api/link",{code:m[1],quiet:true}).then(function(j){ST.lineTok=j.token;applyMe(j);saveST();try{rSet()}catch(e){}if(typeof syncRemSoon==="function")syncRemSoon();SNAP={t:{},s:{},at:0};setTimeout(function(){syncNow()},300);toast(T("เชื่อมกับ LINE แล้วจ้า 🔗 รายการจากไลน์กำลังมา","Linked with LINE 🔗 Loading your entries","已连接 LINE 🔗 正在载入记录","LINE에 연결했어요 🔗 기록을 불러오는 중"))}).catch(function(e){if(oldTok){ST.lineTok=oldTok;syncSoon(300)}toast(T("ลิงก์หมดอายุ กด \"เปิดแอป\" ในไลน์อีกครั้งนะ","Link expired. Tap \"Open app\" in LINE again","链接已过期，请在 LINE 再点一次“打开应用”","링크가 만료됐어요. LINE에서 \"앱 열기\"를 다시 눌러 주세요"))})})();
 function syncNow(){if(syBusy||!ST.lineTok||!apiBase())return;syBusy=true;
 tx.forEach(function(t){if(!t[5])t[5]=nid()});ST2.tx.forEach(function(t){if(!t.id)t.id=nid()});
-var shopOn=shopOk(),body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};
+var shopOn=shopOk(),body={since:SNAP.at,tx:diff(tx,SNAP.t,txRec),shop:shopOn?diff(ST2.tx,SNAP.s,shRec):[],noteDel:(ST.noteDel||[]).slice()};if(shopOn)body.items=ST2.items.slice(0,300).map(function(i){return {n:i.n,p:+i.p||0,c:i.c==null?null:+i.c}});
 apiCall("POST","/api/sync",body).then(function(j){applyMe(j);
  if(j.jobs){var jj=JSON.stringify(j.jobs);if(jj!==JSON.stringify(ST2.jobs||[])){ST2.jobs=j.jobs;sv("tj_store",ST2);try{var pg=document.querySelector(".page.on");if(pg&&pg.id=="p-shop")rStore()}catch(e){}}}
  body.tx.forEach(function(r){if(r.del)delete SNAP.t[r.id];else SNAP.t[r.id]=fp(r)});
@@ -2101,7 +2137,7 @@ try{if(window.MENU&&MENU.push){MENU.splice(2,0,["⏰",["นาฬิกาปล
   if(!window.ST||!ST.lineTok){toast(L("เชื่อมแอปกับ LINE ก่อนนะ (กดเมนู \"เปิดแอป\" ในไลน์)","Link the app with LINE first","请先连接 LINE","먼저 LINE과 연결하세요"));return}
   var d=new Date(),y=d.getMonth()<=3?d.getFullYear()-1:d.getFullYear();
   toast(L("กำลังสร้างรายงาน…","Making your report…","正在生成报表…","보고서 만드는 중…"));
-  apiCall("POST","/api/report",{year:y}).then(function(j){var u=kind=="shop"?j.shop:j.personal;if(!u){toast(L("ยังไม่มีรายการร้านค้า","No shop entries yet","还没有店铺记录","가게 기록이 없어요"));return}openUrl(u)})
+  apiCall("POST","/api/report",{year:y}).then(function(j){var u=kind=="shop"?j.shop:j.personal;if(!u){toast(kind=="shop"?L("ยังไม่มีรายการร้านค้า","No shop entries yet","还没有店铺记录","가게 기록이 없어요"):L("รายงานส่วนตัวใช้ได้ใน Plus ขึ้นไป","Personal report is on Plus and up","个人报表需 Plus 或以上","개인 보고서는 Plus 이상"));return}openUrl(u)})
   .catch(function(e){toast(String(e.message).indexOf("plus")>=0||String(e.message)=="402"?L("รายงานประจำปีสำหรับสมาชิก Plus ขึ้นไปจ้า","Yearly reports are for Plus members","年度报表为 Plus 会员功能","연간 보고서는 Plus 회원 기능이에요"):L("ติดต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง","Couldn't reach the server, try again","无法连接服务器","서버에 연결할 수 없어요"))})};
  try{if(window.MENU&&MENU.push){
   MENU.splice(5,0,["📄",["รายงานยื่นภาษี","Tax report","报税报表","세금 보고서"],["พิมพ์ / PDF / Excel รายรับรายจ่ายทั้งปี","Print, PDF or Excel for the year","全年收支 打印/PDF/Excel","연간 수입·지출 인쇄/PDF/엑셀"],"ภาษี รายงาน ยื่นภาษี พิมพ์ pdf excel tax report 报税 세금",function(){openTaxReport("personal")}]);
