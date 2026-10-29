@@ -1586,6 +1586,10 @@ function menuCard(){var ov=$("mcov");if(!ov){ov=document.createElement("div");ov
  try{MSHOP=MSHOP||localStorage.getItem("tj_mshop")||""}catch(x){}
  ov.style.display="flex";mcDraw()}
 var MTHEMES=[{bg:"#F7EFE3",head:"#5B3A22",card:"#FFFFFF",ink:"#3B2616",acc:"#B5742E",sub:"#8C6E54",hi:"#FFF"},{bg:"#EAF6F1",head:"#12897A",card:"#FFFFFF",ink:"#16352B",acc:"#12897A",sub:"#4F7A6C",hi:"#FFF"},{bg:"#1F1A15",head:"#C9A45C",card:"#2C251E",ink:"#F6EBDA",acc:"#E2BE6E",sub:"#BFA98A",hi:"#1F1A15"},{bg:"#FFF1F4",head:"#E0567A",card:"#FFFFFF",ink:"#4A2030",acc:"#E0567A",sub:"#9A6276",hi:"#FFF"},{bg:"#FFF6DD",head:"#E8930C",card:"#FFFFFF",ink:"#3A2A1A",acc:"#E8930C",sub:"#8A6F52",hi:"#FFF"}];
+// Number boxes with the Thai keyboard on: the number row types Thai letters (ๅ / - ภ ถ ุ ึ ค ต จ), so turn them into digits.
+(function(){var K={"ๅ":"1","/":"2","-":"3","ภ":"4","ถ":"5","ุ":"6","ึ":"7","ค":"8","ต":"9","จ":"0","ใ":".","๐":"0","๑":"1","๒":"2","๓":"3","๔":"4","๕":"5","๖":"6","๗":"7","๘":"8","๙":"9"};
+ document.addEventListener("keydown",function(e){var t=e.target;if(!t||t.tagName!=="INPUT"||t.type!=="number"||e.ctrlKey||e.metaKey||e.altKey)return;var d=K[e.key];if(d===undefined)return;
+  if(e.key==="-"&&!t.value&&+t.min<0)return;e.preventDefault();var v=t.value;if(d=="."){if(!/\./.test(v))t.dataset.dot="1";return}if(t.dataset.dot){delete t.dataset.dot;if(!/\./.test(v))v=(v||"0")+"."}t.value=v+d;t.dispatchEvent(new Event("input",{bubbles:true}))},true)})();
 var MCONTACT="",MCUSTOM="";try{MCUSTOM=localStorage.getItem("tj_mcolor")||"";var _mt=localStorage.getItem("tj_mth");if(_mt!==null)MTH=+_mt}catch(e){}
 // App-coloured themes (colour only, no logos) + a theme made from any colour the shop picks.
 var MAPP=[{k:/^grab/i,n:"Grab",c:"#00B14F"},{k:/^line ?man/i,n:"LINE MAN",c:"#00A651"},{k:/^shopee/i,n:"ShopeeFood",c:"#EE4D2D"},{k:/^robinhood/i,n:"Robinhood",c:"#6A2C91"}];
