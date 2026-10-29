@@ -1750,8 +1750,12 @@ function shopFile(list,label){var nm=String(label||"all"),sheets=[shopSheet(list
  if(!list.some(function(t){return scProd(t)})||list.length<2){}else{var m={},o=[];list.forEach(function(t){var p=scProd(t)||"",k=p.toLowerCase(),x=m[k]||(m[k]={n:p,s:0,ic:0,ad:0,oc:0});if(o.indexOf(x)<0)o.push(x);if(t.k=="s"){x.s+=t.a;if(t.c!=null)x.ic+=t.c*t.q}else if(scCat(t)=="ad")x.ad+=t.a;else x.oc+=t.a});
   if(o.length>1)sheets.push({name:T("กำไรแต่ละสินค้า","Profit by product","各商品利润","상품별 이익"),freeze:3,cols:[30,14,14,14,14,14],rows:[[{v:"📦 "+T("กำไรแต่ละสินค้า","Profit by product","各商品利润","상품별 이익"),s:"title"}],[],[T("สินค้า","Product","商品","상품"),T("ขายได้","Sales","销售","매출"),T("ต้นทุนสินค้า","Item cost","商品成本","상품 원가"),T("ค่าแอด","Ads","广告","광고"),T("ค่าใช้จ่ายอื่น","Other costs","其他费用","기타 비용"),T("กำไร","Profit","利润","이익")].map(function(x){return {v:x,s:"hdr"}})].concat(o.sort(function(a,b){return b.s-a.s}).map(function(x){var pf=x.s-x.ic-x.ad-x.oc;return [{v:x.n||T("ค่าใช้จ่ายร้าน (ไม่ระบุสินค้า)","Shop costs (no product)","店铺费用","가게 비용"),s:"bold"},{v:x.s,s:"inc"},{v:-x.ic,s:"exp"},{v:-x.ad,s:"exp"},{v:-x.oc,s:"exp"},{v:pf,s:pf<0?"neg":"pos"}]}))})}
  return xlsxFile(sheets,"shop-"+nm+"-"+new Date().toISOString().slice(0,10))}
-function shareFiles(fs){try{if(navigator.canShare&&navigator.canShare({files:fs})){navigator.share({files:fs}).catch(function(){});return}}catch(e){}
- fs.forEach(function(f,i){setTimeout(function(){var a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()},i*500)});
+function shareFiles(fs){var dl=function(){fileDl(fs)};var phone=false;try{phone=matchMedia("(pointer:coarse)").matches&&/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)}catch(e){}
+ // On a computer just download. On a phone open the share sheet; if sharing isn't allowed, download instead.
+ try{if(phone&&navigator.canShare&&navigator.canShare({files:fs})){navigator.share({files:fs}).catch(function(er){if(!er||er.name!=="AbortError")dl()});return}}catch(e){}
+ dl()}
+function dlName(n,i,k){var m=String(n).match(/^(.*?)(\.[a-z0-9]+)$/i),base=m?m[1]:n,ext=m?m[2]:"";var a=base.replace(/[^\x21-\x7E]+/g,"-").replace(/-{2,}/g,"-").replace(/^-|-$/g,"");if(a!==base||k>1)a+=(k>1||a!==base?"-"+(i+1):"");return (a||"tuenjai")+ext}
+function fileDl(fs){fs.forEach(function(f,i){setTimeout(function(){var a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=dlName(f.name,i,fs.length);document.body.appendChild(a);a.click();a.remove()},i*500)});
  toast(T("ส่งออกไฟล์แล้ว เปิดด้วย Excel หรือ Google Sheets ได้","Exported. Open it in Excel or Google Sheets","已导出，可用 Excel 或 Google 表格打开","내보냈어요. 엑셀이나 구글 시트로 열 수 있어요"))}
 // Sales channels come from the cost calculator; money accounts are the shop's own list.
 function chNames(){try{return (COST.ch||[]).map(function(c){return c.n}).filter(Boolean)}catch(e){return []}}
