@@ -1556,30 +1556,48 @@ function menuCard(){var ov=$("mcov");if(!ov){ov=document.createElement("div");ov
   ov.addEventListener("input",function(e){if(e.target.id=="mcshop"){MSHOP=e.target.value;try{localStorage.setItem("tj_mshop",MSHOP)}catch(x){}mcPaint()}})}
  try{MSHOP=MSHOP||localStorage.getItem("tj_mshop")||""}catch(x){}
  ov.style.display="flex";mcDraw()}
-var MTHEMES=[{bg:"#FFF4D6",card:"#FFFFFF",ink:"#3A2A1A",acc:"#E8930C",sub:"#8A6F52"},{bg:"#E6F5EF",card:"#FFFFFF",ink:"#16352B",acc:"#12897A",sub:"#4F7A6C"},{bg:"#2B2118",card:"#3A2D21",ink:"#FFF4E2",acc:"#F2B544",sub:"#D9C2A0"},{bg:"#FFEFF3",card:"#FFFFFF",ink:"#4A2030",acc:"#E0567A",sub:"#9A6276"}];
-function mcDraw(){var ov=$("mcov"),ch=COST.ch[MCH]||COST.ch[0];
- var h='<div class="ovc" style="max-width:440px;width:calc(100% - 32px);margin:auto"><b style="font-size:18px">🖼️ '+T("รูปเมนูราคา","Price menu","价目表","가격 메뉴")+'</b>'
-  +'<input id="mcshop" maxlength="30" value="'+esc(MSHOP)+'" placeholder="'+T("ชื่อร้าน (ไม่ใส่ก็ได้)","Shop name (optional)","店名（可不填）","가게 이름 (선택)")+'" style="margin-top:8px">'
-  +'<div class="small" style="margin:8px 0 4px">'+T("ราคาของช่องทาง","Prices from","价格来源","가격 채널")+'</div><div class="chips" style="flex-wrap:wrap">'+COST.ch.map(function(c,i){return '<button data-mch="'+i+'" class="'+(i==MCH?"on":"")+'">'+esc(c.n)+'</button>'}).join("")+'</div>'
-  +'<div class="chips" style="margin-top:8px">'+MTHEMES.map(function(t,i){return '<button data-mth="'+i+'" class="'+(i==MTH?"on":"")+'" style="background:'+t.bg+';color:'+t.ink+';border-color:'+t.acc+'">●</button>'}).join("")+'</div>'
-  +'<img id="mcimg" alt="" style="width:100%;border-radius:12px;margin-top:10px;display:block">'
-  +'<p class="small" style="margin:6px 0">'+T("กดค้างที่รูปเพื่อบันทึก หรือกดแชร์","Long-press the picture to save, or tap Share","长按图片保存，或点分享","이미지를 길게 눌러 저장하거나 공유")+'</p>'
+var MTHEMES=[{bg:"#F7EFE3",head:"#5B3A22",card:"#FFFFFF",ink:"#3B2616",acc:"#B5742E",sub:"#8C6E54",hi:"#FFF"},{bg:"#EAF6F1",head:"#12897A",card:"#FFFFFF",ink:"#16352B",acc:"#12897A",sub:"#4F7A6C",hi:"#FFF"},{bg:"#1F1A15",head:"#C9A45C",card:"#2C251E",ink:"#F6EBDA",acc:"#E2BE6E",sub:"#BFA98A",hi:"#1F1A15"},{bg:"#FFF1F4",head:"#E0567A",card:"#FFFFFF",ink:"#4A2030",acc:"#E0567A",sub:"#9A6276",hi:"#FFF"},{bg:"#FFF6DD",head:"#E8930C",card:"#FFFFFF",ink:"#3A2A1A",acc:"#E8930C",sub:"#8A6F52",hi:"#FFF"}];
+var MCONTACT="";
+function mcDraw(){var ov=$("mcov");try{MCONTACT=MCONTACT||localStorage.getItem("tj_mcontact")||""}catch(x){}
+ var h='<div class="ovc" style="max-width:440px;width:calc(100% - 32px);margin:auto"><b style="font-size:18px">🖼️ '+T("รูปเมนูราคา","Price menu","价目表","가격 메뉴")+'</b><p class="small" style="margin:4px 0 0">'+T("ทำรูปราคาสินค้าไว้โพสต์ ส่งลูกค้า หรือปริ้นแปะร้าน","A price picture to post, send to customers or print","可发帖、发给客户或打印的价目图","게시·고객 전송·인쇄용 가격 이미지")+'</p>'
+  +'<input id="mcshop" maxlength="30" value="'+esc(MSHOP)+'" placeholder="'+T("ชื่อร้าน เช่น มณิลาเฟอร์นิเจอร์","Shop name","店名","가게 이름")+'" style="margin-top:8px">'
+  +'<input id="mccontact" maxlength="40" value="'+esc(MCONTACT)+'" placeholder="'+T("ช่องทางติดต่อ เช่น โทร 084-xxx-xxxx / LINE @ร้าน (ไม่ใส่ก็ได้)","Contact, e.g. phone / LINE (optional)","联系方式（可不填）","연락처 (선택)")+'">'
+  +'<div class="small" style="margin:8px 0 4px">'+T("ใช้ราคาของช่องทาง","Prices from","价格来源","가격 채널")+'</div><div class="chips" style="flex-wrap:wrap">'+COST.ch.map(function(c,i){return '<button data-mch="'+i+'" class="'+(i==MCH?"on":"")+'">'+esc(c.n)+'</button>'}).join("")+'</div>'
+  +'<div class="small" style="margin:8px 0 4px">'+T("สี","Colour","颜色","색상")+'</div><div class="chips">'+MTHEMES.map(function(t,i){return '<button data-mth="'+i+'" aria-label="theme" style="width:40px;height:40px;padding:0;border-radius:50%;background:linear-gradient(135deg,'+t.head+' 50%,'+t.bg+' 50%);border:3px solid '+(i==MTH?t.ink:'transparent')+'"></button>'}).join("")+'</div>'
+  +'<img id="mcimg" alt="" style="width:100%;border-radius:12px;margin-top:10px;display:block;box-shadow:0 4px 16px rgba(0,0,0,.12)">'
+  +'<p class="small" style="margin:6px 0">'+T("💡 ใส่รูปสินค้าได้ที่หน้าคำนวณต้นทุน → แก้ไขสินค้า → 📷 ใส่รูป รูปจะขึ้นในเมนูด้วย","Tip: add product photos on the cost page and they show here","提示：在成本页给商品加图片，这里会显示","팁: 원가 페이지에서 상품 사진을 넣으면 여기에 보여요")+'</p>'
   +'<button class="btn" data-mshare style="margin:0">📤 '+T("แชร์ / บันทึกรูป","Share / save","分享 / 保存","공유 / 저장")+'</button><button class="btn pbtn2" data-mclose style="margin-top:8px">'+T("ปิด","Close","关闭","닫기")+'</button></div>';
- ov.innerHTML=h;mcPaint()}
-function mcPaint(){var ch=COST.ch[MCH]||COST.ch[0],th=MTHEMES[MTH],items=COST.pr.map(function(p){return {n:p.n,v:+((p.px||{})[ch.n])||0}}).filter(function(x){return x.v>0});
- var W=1080,pad=70,rowH=96,top=MSHOP?300:230,H=Math.max(1080,top+items.length*rowH+200),cv=document.createElement("canvas");cv.width=W;cv.height=H;var g=cv.getContext("2d");
- var F='"Mitr","IBM Plex Sans Thai","Noto Sans Thai",sans-serif';
+ ov.innerHTML=h;
+ var ci=$("mccontact");if(ci)ci.addEventListener("input",function(){MCONTACT=ci.value;try{localStorage.setItem("tj_mcontact",MCONTACT)}catch(x){}mcPaint()});
+ mcPaint()}
+function mcPaint(){var ch=COST.ch[MCH]||COST.ch[0]||{n:""},items=COST.pr.map(function(p){return {n:p.n,v:+((p.px||{})[ch.n])||0,img:p.img}}).filter(function(x){return x.v>0});
+ var pics=items.filter(function(x){return x.img}),left=pics.length;items.forEach(function(x){if(x.img){x.im=new Image();x.im.onload=x.im.onerror=function(){if(--left<=0)mcRender(items,ch)};x.im.src=x.img}});
+ var go=function(){if(!pics.length)mcRender(items,ch)};try{document.fonts.ready.then(go)}catch(e){go()}}
+function mcRender(items,ch){var th=MTHEMES[MTH]||MTHEMES[0],W=1080,F='"Mitr","IBM Plex Sans Thai","Noto Sans Thai",sans-serif',n=items.length,grid=n>0&&n<=8,cols=n<=1?1:2;
+ var headH=MSHOP?330:260,cellW=(W-120-(cols-1)*40)/cols,imgH=grid?(cols==1?560:360):0,cellH=grid?imgH+220:110,rows=grid?Math.ceil(n/cols):n,bodyH=Math.max(260,grid?rows*cellH+(rows-1)*40:n*cellH),footH=MCONTACT?230:150,H=Math.max(1350,headH+60+bodyH+60+footH);
+ var cv=document.createElement("canvas");cv.width=W;cv.height=H;var g=cv.getContext("2d");
  g.fillStyle=th.bg;g.fillRect(0,0,W,H);
- g.fillStyle=th.acc;g.globalAlpha=.12;g.beginPath();g.arc(W-60,40,260,0,7);g.fill();g.beginPath();g.arc(30,H-30,200,0,7);g.fill();g.globalAlpha=1;
- g.textAlign="center";g.fillStyle=th.ink;
- if(MSHOP){g.font="600 72px "+F;g.fillText(MSHOP,W/2,150);g.font="500 40px "+F;g.fillStyle=th.acc;g.fillText(T("เมนู & ราคา","Menu & prices","菜单与价格","메뉴 & 가격")+(MCH?" · "+ch.n:""),W/2,220)}
- else{g.font="600 72px "+F;g.fillText(T("เมนู & ราคา","Menu & prices","菜单与价格","메뉴 & 가격"),W/2,150);if(MCH){g.font="500 40px "+F;g.fillStyle=th.acc;g.fillText(ch.n,W/2,205)}}
- var y=top;g.fillStyle=th.card;rr(g,pad-20,y-30,W-2*(pad-20),items.length*rowH+40,36);g.fill();
- items.forEach(function(x,i){var cy=y+i*rowH+50;g.textAlign="left";g.fillStyle=th.ink;g.font="500 44px "+F;var nm=x.n;while(g.measureText(nm).width>W-2*pad-260&&nm.length>2)nm=nm.slice(0,-2)+"…";g.fillText(nm,pad+10,cy);
-  g.textAlign="right";g.fillStyle=th.acc;g.font="600 48px "+F;g.fillText("฿"+x.v.toLocaleString("th-TH"),W-pad-10,cy);
-  if(i<items.length-1){g.strokeStyle=th.sub;g.globalAlpha=.25;g.setLineDash([6,10]);g.beginPath();g.moveTo(pad+10,cy+40);g.lineTo(W-pad-10,cy+40);g.stroke();g.setLineDash([]);g.globalAlpha=1}});
- if(!items.length){g.textAlign="center";g.fillStyle=th.sub;g.font="500 40px "+F;g.fillText(T("ยังไม่ได้ใส่ราคาของช่องทางนี้","No prices set for this channel","此渠道尚未定价","이 채널 가격 없음"),W/2,y+60)}
- g.textAlign="center";g.fillStyle=th.sub;g.font="400 30px "+F;g.fillText(T("ทำด้วยแอปเตือนใจ · LINE @528ggibx","Made with Tuenjai · LINE @528ggibx","用 Tuenjai 制作 · LINE @528ggibx","Tuenjai로 제작 · LINE @528ggibx"),W/2,H-60);
+ g.fillStyle=th.head;g.fillRect(0,0,W,headH);g.save();g.beginPath();g.rect(0,0,W,headH);g.clip();g.globalAlpha=.10;g.fillStyle="#fff";g.beginPath();g.arc(W-80,60,240,0,7);g.fill();g.beginPath();g.arc(90,headH-10,140,0,7);g.fill();g.globalAlpha=1;g.restore();
+ g.textAlign="center";g.fillStyle=th.hi;
+ var fit=function(t,max,size,w){g.font=w+" "+size+"px "+F;while(g.measureText(t).width>max&&size>30){size-=4;g.font=w+" "+size+"px "+F}return t};
+ if(MSHOP){fit(MSHOP,W-140,92,"600");g.fillText(MSHOP,W/2,165);g.font="400 40px "+F;g.globalAlpha=.9;g.fillText(T("ราคาสินค้า","Price list","价目表","가격표")+(ch.n?"  ·  "+ch.n:""),W/2,245);g.globalAlpha=1}
+ else{g.font="600 84px "+F;g.fillText(T("ราคาสินค้า","Price list","价目表","가격표"),W/2,150);if(ch.n){g.font="400 40px "+F;g.globalAlpha=.9;g.fillText(ch.n,W/2,215);g.globalAlpha=1}}
+ var y0=headH+60;
+ var shadow=function(on){g.shadowColor=on?"rgba(0,0,0,.10)":"transparent";g.shadowBlur=on?30:0;g.shadowOffsetY=on?8:0};
+ if(!n){g.fillStyle=th.sub;g.font="500 40px "+F;g.fillText(T("ยังไม่ได้ตั้งราคาของช่องทางนี้","No prices set for this channel","此渠道尚未定价","이 채널 가격 없음"),W/2,y0+120)}
+ else if(grid)items.forEach(function(x,i){var c=i%cols,r=Math.floor(i/cols),cx=60+c*(cellW+40),cy=y0+r*(cellH+40);
+  shadow(true);g.fillStyle=th.card;rr(g,cx,cy,cellW,cellH,36);g.fill();shadow(false);
+  g.save();rr(g,cx,cy,cellW,imgH,36);g.clip();g.fillRect(cx,cy+imgH-40,cellW,40);
+  if(x.im&&x.im.width){var sc=Math.max(cellW/x.im.width,imgH/x.im.height),iw=x.im.width*sc,ih=x.im.height*sc;g.drawImage(x.im,cx+(cellW-iw)/2,cy+(imgH-ih)/2,iw,ih)}
+  else{g.fillStyle=th.bg;g.fillRect(cx,cy,cellW,imgH);g.fillStyle=th.acc;g.globalAlpha=.35;g.font="400 "+Math.round(imgH*.42)+"px "+F;g.textAlign="center";g.fillText("📦",cx+cellW/2,cy+imgH*.66);g.globalAlpha=1}
+  g.restore();
+  g.textAlign="left";g.fillStyle=th.ink;var mw=cellW-60,l1=x.n,l2="",fs=42;g.font="500 42px "+F;while(fs>34&&g.measureText(l1).width>mw){fs-=2;g.font="500 "+fs+"px "+F}if(g.measureText(l1).width>mw){fs=42;g.font="500 42px "+F;var sp=x.n.split(" "),cut=x.n.length;try{var sg=Array.from(new Intl.Segmenter("th",{granularity:"word"}).segment(x.n)).map(function(z){return z.segment});if(sg.length>1)sp=sg.map(function(z,ii){return z}),sp.__seg=1}catch(er){}if(sp.__seg){l1="";for(var k2=0;k2<sp.length;k2++){if(g.measureText(l1+sp[k2]).width>mw&&l1)break;l1+=sp[k2]}l2=x.n.slice(l1.length).trim();sp=[]}if(!sp.length){}else if(sp.length>1){l1="";for(var k=0;k<sp.length;k++){var tr=(l1?l1+" ":"")+sp[k];if(g.measureText(tr).width>mw&&l1)break;l1=tr}l2=x.n.slice(l1.length).trim()}else{while(cut>1&&(g.measureText(x.n.slice(0,cut)).width>mw||/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/.test(x.n.charAt(cut))))cut--;l1=x.n.slice(0,cut);l2=x.n.slice(cut)}while(l2&&g.measureText(l2).width>mw&&l2.length>2)l2=l2.slice(0,-2)+"…"}
+  g.fillText(l1,cx+30,cy+imgH+62);if(l2)g.fillText(l2,cx+30,cy+imgH+112);
+  var pt="฿"+x.v.toLocaleString("th-TH");g.font="600 50px "+F;var pw=g.measureText(pt).width+50,py=cy+imgH+(l2?136:96);g.fillStyle=th.acc;rr(g,cx+24,py,pw,62,31);g.fill();g.fillStyle=th.hi;g.fillText(pt,cx+49,py+48)})
+ else{shadow(true);g.fillStyle=th.card;rr(g,60,y0,W-120,bodyH,36);g.fill();shadow(false);items.forEach(function(x,i){var cy=y0+i*cellH+70;g.textAlign="left";g.fillStyle=th.ink;g.font="500 42px "+F;var nm=x.n;while(g.measureText(nm).width>W-480&&nm.length>2)nm=nm.slice(0,-2)+"…";g.fillText(nm,110,cy);g.textAlign="right";g.fillStyle=th.acc;g.font="600 46px "+F;g.fillText("฿"+x.v.toLocaleString("th-TH"),W-110,cy);if(i<n-1){g.strokeStyle=th.sub;g.globalAlpha=.2;g.beginPath();g.moveTo(110,cy+38);g.lineTo(W-110,cy+38);g.stroke();g.globalAlpha=1}})}
+ g.textAlign="center";
+ if(MCONTACT){var fy=H-footH+40;g.fillStyle=th.head;rr(g,120,fy,W-240,100,50);g.fill();g.fillStyle=th.hi;fit("📞 "+MCONTACT,W-320,44,"500");g.fillText("📞 "+MCONTACT,W/2,fy+66)}
+ g.fillStyle=th.sub;g.font="400 26px "+F;g.globalAlpha=.8;g.fillText(T("ทำด้วยแอปเตือนใจ","Made with Tuenjai","用 Tuenjai 制作","Tuenjai로 제작"),W/2,H-50);g.globalAlpha=1;
  window.MCURL=cv.toDataURL("image/png");window.MCCV=cv;var im=$("mcimg");if(im)im.src=MCURL}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function mcShare(){var cv=window.MCCV;if(!cv)return;cv.toBlob(function(b){try{var f=new File([b],"menu.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){});return}}catch(e){}
