@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>คู่มือผู้ช่วยร้านเดลิเวอรี่ · เตือนใจ</title>
+<meta name="description" content="วิธีใช้ผู้ช่วยร้านเดลิเวอรี่ในแอปเตือนใจ ทีละขั้น: คำนวณต้นทุน ตั้งราคาแต่ละแอป GP จดยอดขาย ออเดอร์ พนักงาน และรายงานภาษี">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F8FBFB;--card:#fff;--ink:#1E2A32;--sub:#5F717B;--teal:#0F8A7E;--tealbg:#E3F6F2;--butter:#FFF4D1;--butterd:#8A5D00;--line:#E3EBEE;--red:#D93E43;--chat:#8BE08F;--chatink:#14301A;--shadow:0 1px 2px rgba(15,40,50,.06),0 6px 18px rgba(15,40,50,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11181B;--card:#1A2428;--ink:#EAF2F3;--sub:#9DB0B6;--teal:#3CC4B4;--tealbg:#16332F;--butter:#3A3018;--butterd:#FFD879;--line:#2A383D;--red:#FF7A7E;--chat:#2F6B3A;--chatink:#EAF8EC;--shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11181B;--card:#1A2428;--ink:#EAF2F3;--sub:#9DB0B6;--teal:#3CC4B4;--tealbg:#16332F;--butter:#3A3018;--butterd:#FFD879;--line:#2A383D;--red:#FF7A7E;--chat:#2F6B3A;--chatink:#EAF8EC;--shadow:none;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 Prompt,"Noto Sans Thai",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:Mitr,Prompt,sans-serif;font-weight:500;line-height:1.35;text-wrap:balance;margin:0}
+a{color:var(--teal)}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px}
+header.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;gap:10px;height:52px}
+.bar b{font-family:Mitr,sans-serif;font-weight:500;font-size:16px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;font-size:14px;background:var(--teal);color:#fff;border-radius:99px;padding:7px 14px;white-space:nowrap}
+.toc{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.toc::-webkit-scrollbar{display:none}
+.toc a{flex:none;text-decoration:none;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:4px 12px;white-space:nowrap}
+.hero{padding-block:28px 8px}
+.hero .kick{display:inline-block;font-size:13px;font-weight:600;color:var(--butterd);background:var(--butter);border-radius:99px;padding:2px 12px;margin-bottom:10px}
+.hero h1{font-size:clamp(26px,6vw,36px)}
+.hero p{color:var(--sub);margin:8px 0 0;max-width:62ch}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:20px 0 6px}
+.qs{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.qs .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-weight:600;font-size:14px;align-items:center;justify-content:center;margin-right:6px}
+.qs b{font-family:Mitr,sans-serif;font-weight:500}
+.qs p{margin:6px 0 0;color:var(--sub);font-size:14px}
+section.step{padding-block:34px 6px;border-top:1px solid var(--line);margin-top:26px}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.sh .no{font-family:Mitr,sans-serif;font-size:13px;font-weight:600;color:var(--teal);background:var(--tealbg);border-radius:8px;padding:2px 9px;flex:none}
+.sh h2{font-size:clamp(21px,4.6vw,26px)}
+.lead{color:var(--sub);margin:0 0 14px;max-width:65ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.grid.rev{grid-template-columns:300px minmax(0,1fr)}
+.grid.rev .shot{order:-1}
+@media (max-width:720px){.grid,.grid.rev{grid-template-columns:minmax(0,1fr)}.grid.rev .shot{order:0}}
+.shot{margin:0;justify-self:center;width:100%;max-width:300px}
+.shot img{display:block;width:100%;height:auto;border-radius:18px;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
+.shot figcaption{font-size:12.5px;color:var(--sub);text-align:center;margin-top:6px}
+.shots2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin-top:6px}
+.shots2 .shot{max-width:none}
+ol.do{margin:0;padding:0;list-style:none;counter-reset:d;display:grid;gap:10px}
+ol.do>li{counter-increment:d;position:relative;padding-left:36px;min-width:0}
+ol.do>li::before{content:counter(d);position:absolute;left:0;top:2px;width:26px;height:26px;border-radius:50%;border:2px solid var(--teal);color:var(--teal);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+.btnlike{display:inline-block;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:0 7px;white-space:nowrap}
+.tip{background:var(--butter);color:var(--ink);border-radius:14px;padding:12px 14px;margin:14px 0 0;font-size:14.5px}
+.tip b{color:var(--butterd)}
+.warn{background:var(--tealbg);border-radius:14px;padding:12px 14px;margin:14px 0 0;font-size:14.5px}
+dl.read{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;margin:10px 0 0;font-size:15px}
+dl.read dt{font-weight:600;white-space:nowrap}
+dl.read dd{margin:0;color:var(--sub)}
+@media (max-width:420px){dl.read{grid-template-columns:minmax(0,1fr)}dl.read dd{margin-bottom:6px}}
+.chat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:8px;box-shadow:var(--shadow);max-width:420px}
+.chat .me{justify-self:end;background:var(--chat);color:var(--chatink);border-radius:16px 16px 4px 16px;padding:7px 12px;max-width:85%;font-size:15px;white-space:pre-line}
+.chat .bot{justify-self:start;background:var(--bg);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:8px 12px;max-width:90%;font-size:14px;white-space:pre-line}
+.chat .who{font-size:11.5px;color:var(--sub);margin:-4px 0 -4px 4px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--sub);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+code{font-family:Prompt,sans-serif;font-weight:600;background:var(--tealbg);color:var(--ink);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.cp{border:1px solid var(--line);background:var(--card);color:var(--teal);border-radius:8px;font:600 12px Prompt,sans-serif;padding:3px 8px;cursor:pointer;white-space:nowrap}
+.cp.ok{background:var(--teal);color:#fff;border-color:var(--teal)}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";color:var(--teal);margin-right:8px}
+details[open] summary::before{content:"－"}
+details p{margin:8px 0 0;color:var(--sub)}
+.foot{margin:40px 0 0;padding:24px 0 calc(32px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);text-align:center;color:var(--sub);font-size:14px}
+.foot .back{font-size:15px;padding:10px 20px;margin-bottom:12px}
+ul.plain{margin:6px 0 0;padding-left:20px}
+ul.plain li{margin:3px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:13px;background:var(--tealbg);border-radius:99px;padding:2px 10px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="bar"><b>📖 คู่มือผู้ช่วยร้านเดลิเวอรี่</b><a class="back" href="../">← กลับแอป</a></div>
+    <nav class="toc" aria-label="สารบัญ">
+      <a href="#start">เริ่มต้น</a><a href="#home">หน้าร้าน</a><a href="#gp">ตั้ง GP</a><a href="#menu">เพิ่มเมนู</a><a href="#price">ราคาแต่ละแอป</a><a href="#hidden">ต้นทุนแฝง</a><a href="#pic">รูปเมนู</a><a href="#sell">จดยอดขาย</a><a href="#report">ดูกำไร</a><a href="#order">ออเดอร์</a><a href="#staff">พนักงาน</a><a href="#tax">ภาษี</a><a href="#cmd">คำสั่งไลน์</a><a href="#faq">คำถาม</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" id="start">
+    <span class="kick">🏪 ผู้ช่วยร้านเดลิเวอรี่ · ตลอดชีพ</span>
+    <h1>รู้ต้นทุน ตั้งราคาแต่ละแอป<br>และเห็นกำไรจริงทุกวัน</h1>
+    <p>คู่มือนี้พาใช้ทีละขั้น ตั้งแต่ใส่เมนูแรกจนถึงทำรายงานภาษีปลายปี ใช้ได้ทั้งในแอปเตือนใจและพิมพ์สั่งในไลน์ ทำตาม 3 ขั้นด้านล่างก่อน ที่เหลือค่อย ๆ อ่านตอนอยากใช้</p>
+    <div class="quick">
+      <div class="qs"><span class="n">1</span><b>เปิดแอป</b><p>ในไลน์เตือนใจ กดเมนู "เปิดแอป" แล้วเลื่อนหา <b>ร้านค้าของฉัน</b> ในหน้าแรก</p></div>
+      <div class="qs"><span class="n">2</span><b>ตั้งช่องทางขาย + GP</b><p>บอกแอปว่าขายที่ไหนบ้าง และแต่ละแอปหักกี่ % ทำครั้งเดียว</p></div>
+      <div class="qs"><span class="n">3</span><b>เพิ่มเมนูแรก</b><p>ใส่ต้นทุนวัตถุดิบ กล่อง ถุง แล้วแอปบอกราคาขายที่ไม่ขาดทุนในทุกแอปให้เลย</p></div>
+    </div>
+  </div>
+
+  <section class="step" id="home">
+    <div class="sh"><span class="no">ขั้น 1</span><h2>หน้า "ร้านค้าของฉัน"</h2></div>
+    <div class="grid">
+      <div>
+        <p class="lead">ทุกอย่างของร้านอยู่ในกล่องนี้บนหน้าแรกของแอป กดปุ่มไหนก็ไปหน้านั้นเลย</p>
+        <dl class="read">
+          <dt>🧮 คำนวณต้นทุน</dt><dd>ใส่เมนู ต้นทุน ดูราคาขายและกำไรของทุกแอป</dd>
+          <dt>📊 สมุดร้านค้า</dt><dd>ยอดขาย ต้นทุน กำไร วันนี้ เดือนนี้ ปีนี้</dd>
+          <dt>🧾 ออเดอร์</dt><dd>ออเดอร์ล่วงหน้า มัดจำ ยอดค้าง วันส่ง</dd>
+          <dt>🖼️ รูปเมนูราคา</dt><dd>ทำรูปป้ายราคา ส่งลูกค้าหรือโพสต์ได้</dd>
+          <dt>👥 พนักงาน</dt><dd>ชวนพนักงานมาช่วยจดยอดขาย</dd>
+          <dt>📄 ภาษี · ไฟล์</dt><dd>รายงานทั้งปี ใบคำนวณภาษี ไฟล์ Excel</dd>
+          <dt>➕ จดขาย</dt><dd>จดยอดขายเร็ว ๆ จากหน้าแรก</dd>
+        </dl>
+        <div class="tip"><b>ไม่เห็นของใหม่?</b> ปิดแอปแล้วเปิดใหม่ 1 ครั้ง แอปจะอัปเดตตัวเองให้</div>
+      </div>
+      <figure class="shot"><img src="img/01_home.webp" width="600" height="420" alt="กล่องร้านค้าของฉันบนหน้าแรก มีปุ่มคำนวณต้นทุน สมุดร้านค้า ออเดอร์ รูปเมนูราคา พนักงาน ภาษี และจดขาย"><figcaption>หน้าแรก → ร้านค้าของฉัน</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="gp">
+    <div class="sh"><span class="no">ขั้น 2</span><h2>ตั้งช่องทางขายและค่า GP (ทำครั้งเดียว)</h2></div>
+    <div class="grid rev">
+      <div>
+        <p class="lead">GP คือส่วนที่แอปเดลิเวอรี่หักจากราคาขาย ใส่ให้ตรงกับสัญญาร้าน กำไรที่แอปคำนวณจะได้ตรงกับเงินที่เข้าร้านจริง</p>
+        <ol class="do">
+          <li>กด <span class="btnlike">🧮 คำนวณต้นทุน</span> แล้วเลื่อนลงมาที่หัวข้อ <b>ช่องทางขาย และค่า GP</b></li>
+          <li>มีให้แล้ว: หน้าร้าน 0%, Grab · LINE MAN · ShopeeFood 30%, Robinhood 28% แก้ตัวเลขให้ตรงกับร้านได้เลย</li>
+          <li>ติ๊ก <b>+VAT</b> ถ้าแอปเก็บ VAT 7% ของค่า GP เพิ่ม (Grab/LINE MAN คิดแบบนี้)</li>
+          <li>มีค่าแคมเปญหรือโปร ใส่ในช่อง <b>แคมเปญ %</b> หรือ <b>฿/ชิ้น</b></li>
+          <li>ขายแอปอื่น กด <span class="btnlike">➕ เพิ่มช่องทาง</span> หรือกดปุ่มสำเร็จรูป 🍜 ร้านอาหาร · 🛒 ร้านชำ · 📦 ขายออนไลน์</li>
+        </ol>
+        <div class="tip"><b>ไม่แน่ใจกี่ %?</b> ดูในหน้าผู้ค้าหรือสัญญาของแต่ละแอป ค่าที่ใส่ไว้ให้เป็นค่าทั่วไป แต่ละร้านอาจได้ไม่เท่ากัน</div>
+      </div>
+      <figure class="shot"><img src="img/07_gp.webp" width="600" height="980" loading="lazy" alt="หน้าตั้งช่องทางขาย มีช่องชื่อแอป เปอร์เซ็นต์ GP ช่องติ๊ก VAT และค่าแคมเปญ"><figcaption>แก้ % GP ของแต่ละแอปได้เอง</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="menu">
+    <div class="sh"><span class="no">ขั้น 3</span><h2>เพิ่มเมนูและใส่ต้นทุน</h2></div>
+    <p class="lead">ต้นทุนแบ่งเป็น 3 แท็บ ใส่ทีละรายการ ไม่ต้องคิดเลขเอง แอปหารให้</p>
+    <div class="grid">
+      <div>
+        <ol class="do">
+          <li>ในหน้าคำนวณต้นทุน กด <span class="btnlike">➕ เพิ่มสินค้า / เมนู</span> ใส่ชื่อเมนูและราคาขายหน้าร้าน</li>
+          <li><b>🥬 วัตถุดิบ/อุปกรณ์</b>: แตะชื่อวัตถุดิบที่มีให้ หรือพิมพ์เอง แล้วใส่ต้นทุนต่อจาน</li>
+          <li>ไม่รู้ต้นทุนต่อจาน? ใช้ส่วน <b>ช่วยคิดจากราคาที่ซื้อมา</b> เช่น ซื้อไข่ 1 แผง ฿120 ใช้จานละ 1 ฟอง แอปคิดให้เป็น ฿4</li>
+          <li><b>👷 ค่าแรง</b>: ค่าแรงต่อจาน (ถ้าอยากนับ)</li>
+          <li><b>📎 อื่น ๆ</b>: กล่อง ถุง แก้ว ฝา หลอด ช้อน ค่าส่ง ซื้อเป็นแพ็คก็ให้แอปหารได้ เช่น กล่อง 50 ใบ ฿75 = ใบละ ฿1.50</li>
+          <li>กด <span class="btnlike">บันทึก</span> เสร็จแล้ว เมนูจะขึ้นในรายการพร้อมกำไร</li>
+        </ol>
+        <div class="tip"><b>หน่วยครบ</b> กรัม ขีด กิโล มล. ช้อนชา ช้อนโต๊ะ ถ้วยตวง ลิตร ชิ้น ฟอง ซอง มัด ขวด กระปุก กระป๋อง ถุง แพ็ค แผงไข่ โหล ฯลฯ ไม่มีหน่วยที่ต้องการ เลือก <b>➕ เพิ่มหน่วยเอง</b> ถ้าซื้อเป็นกิโลแต่ใช้เป็นชิ้น แอปจะถามว่า 1 ชิ้นหนักกี่กรัม</div>
+        <div class="warn">🍳 ขายเมนูเดียวหลายขนาด หรือทำทีละหม้อ เปิด <b>📷 ใส่รูป · รหัสสินค้า · ทำครั้งละหลายชิ้น</b> ใส่ว่าหม้อหนึ่งได้กี่จาน แอปจะหารต้นทุนให้</div>
+      </div>
+      <figure class="shot"><img src="img/03_editor.webp" width="600" height="1213" loading="lazy" alt="หน้าแก้ไขเมนู กะเพราหมูสับไข่ดาว ราคาหน้าร้าน 50 บาท และรายการต้นทุนหมูสับ ข้าว ไข่ กล่อง ถุง"><figcaption>เมนูที่ใส่ต้นทุนครบแล้ว</figcaption></figure>
+    </div>
+    <div class="shots2" style="margin-top:20px">
+      <figure class="shot"><img src="img/04_material.webp" width="600" height="1303" loading="lazy" alt="แท็บวัตถุดิบ มีปุ่มชื่อวัตถุดิบให้แตะ และส่วนช่วยคิด ซื้อไข่ 1 แผง 120 บาท ใช้ 1 ฟอง ได้ 4 บาทต่อจาน"><figcaption>แท็บวัตถุดิบ + ช่วยคิดจากราคาที่ซื้อ</figcaption></figure>
+      <figure class="shot"><img src="img/05_other.webp" width="600" height="935" loading="lazy" alt="แท็บอื่นๆ มีปุ่มกล่องข้าว ถุงหิ้ว แก้ว หลอด และส่วนช่วยหารราคาแพ็ค"><figcaption>แท็บอื่น ๆ: กล่อง ถุง แก้ว + หารราคาแพ็ค</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="price">
+    <div class="sh"><span class="no">ขั้น 4</span><h2>ดูราคาขายและกำไรของแต่ละแอป</h2></div>
+    <div class="grid">
+      <div>
+        <p class="lead">ในหน้าเมนู เลื่อนลงมาที่ <b>ราคาขาย และกำไรแต่ละช่องทาง</b> ใส่ราคาที่ตั้งในแต่ละแอป แอปจะคิดให้ทันที อ่านจากบนลงล่างแบบนี้</p>
+        <dl class="read">
+          <dt>ขายได้</dt><dd>ราคาที่ลูกค้าจ่ายในแอปนั้น</dd>
+          <dt>โดนหัก GP</dt><dd>ส่วนที่แอปหัก (รวม VAT ถ้าติ๊กไว้)</dd>
+          <dt>เงินเข้าร้าน</dt><dd>เงินที่ร้านได้รับจริง</dd>
+          <dt>หักต้นทุนต่อชิ้น</dt><dd>ต้นทุนทั้งหมดของเมนูนี้ รวมต้นทุนแฝงและค่าโฆษณาที่ตั้งไว้</dd>
+          <dt>กำไร</dt><dd>เงินที่เหลือจริงต่อจาน</dd>
+          <dt>⚖️ จุดคุ้มทุน</dt><dd>ต้องขายกี่จานต่อเดือนถึงจะพอจ่ายค่าใช้จ่ายคงที่</dd>
+          <dt>🛑 ราคาต่ำสุด</dt><dd>ตั้งราคาต่ำกว่านี้ = ขาดทุน (ขึ้นตัวแดงถ้าราคาต่ำไป)</dd>
+          <dt>ราคาแนะนำ</dt><dd>ราคาที่ได้กำไรตามเป้า (ตั้งค่าเริ่มต้น 30%) กด <b>ใช้ราคานี้</b> ได้เลย</dd>
+        </dl>
+        <div class="tip"><b>เห็น ✅ "สูงกว่าแล้ว"</b> แปลว่าราคาที่ตั้งได้กำไรเกินเป้าอยู่แล้ว ไม่ต้องลดราคา<br><b>เห็น ⬆️ "ควรขึ้นราคาอีก ฿..."</b> แปลว่ายังได้กำไรไม่ถึงเป้า</div>
+        <div class="warn">🩺 หน้ารวมเมนูมี <b>ตรวจสุขภาพเมนู</b> บอกว่าเมนูไหนขาดทุนหรือกำไรบางในแอปไหน พร้อมวิธีแก้</div>
+      </div>
+      <figure class="shot"><img src="img/06_channels.webp" width="600" height="1158" loading="lazy" alt="การ์ดหน้าร้านและ Grab แสดงขายได้ โดนหัก GP เงินเข้าร้าน ต้นทุน กำไร จุดคุ้มทุน ราคาต่ำสุด และราคาแนะนำ"><figcaption>หน้าร้าน ฿50 vs Grab ฿70</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="hidden">
+    <div class="sh"><span class="no">ขั้น 5</span><h2>ต้นทุนแฝงและค่าโฆษณา</h2></div>
+    <div class="grid rev">
+      <div>
+        <p class="lead">ค่าใช้จ่ายที่จ่ายเป็นรายเดือน ไม่ได้ผูกกับจานใดจานหนึ่ง เช่น ค่าแก๊ส ค่าไฟ ค่าเช่า ใส่ไว้ แอปจะเฉลี่ยลงทุกจานให้</p>
+        <ol class="do">
+          <li>หัวข้อ <b>🔥 ต้นทุนแฝง</b>: ใส่ชื่อและบาทต่อเดือน กด ➕</li>
+          <li>ใส่ <b>ขายได้ประมาณกี่ชิ้น/จานต่อเดือน</b> (ทุกเมนูรวมกัน) แอปจะเอาไปหาร</li>
+          <li>หัวข้อ <b>📣 ค่าการตลาด</b>: เลือกแบบเดียว
+            <ul class="plain"><li><b>ต่อเดือน / ต่อวัน</b> ยิงโฆษณาในแอปเป็นงบ เช่น วันละ ฿100</li><li><b>ต่อออเดอร์</b> ของแถม ส่วนลดที่ร้านออก</li><li><b>% ยอดขาย</b> แอปหักเป็นเปอร์เซ็นต์</li></ul></li>
+          <li>บิลโฆษณายังไม่รวม VAT ติ๊ก <b>บวก VAT 7%</b></li>
+        </ol>
+        <div class="tip"><b>อย่าใส่ซ้ำ</b> ค่าใช้จ่ายไหนใส่ในต้นทุนแฝงแล้ว ไม่ต้องใส่ในเมนูอีก</div>
+      </div>
+      <figure class="shot"><img src="img/08_overhead.webp" width="600" height="944" loading="lazy" alt="หัวข้อต้นทุนแฝง ค่าแก๊ส 1,200 ค่าไฟ 900 ต่อเดือน ขาย 900 จานต่อเดือน และค่าการตลาดแบบต่อวัน 100 บาท"><figcaption>ต้นทุนแฝง + ค่าโฆษณาต่อวัน</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="pic">
+    <div class="sh"><span class="no">ขั้น 6</span><h2>ทำรูปเมนูราคา</h2></div>
+    <div class="grid">
+      <div>
+        <ol class="do">
+          <li>กด <span class="btnlike">🖼️ รูปเมนูราคา</span> (หน้าแรกหรือหน้าคำนวณต้นทุน)</li>
+          <li>เลือกช่องทาง ราคาในรูปจะเปลี่ยนตามแอปที่เลือก เช่น ราคาหน้าร้าน หรือราคา Grab</li>
+          <li>ใส่ชื่อร้าน เลือกสี ใส่รูปสินค้าได้ทีละเมนู</li>
+          <li>กด <b>แชร์/บันทึก</b> เอาไปส่งลูกค้าหรือโพสต์</li>
+        </ol>
+        <div class="tip"><b>ใส่รูปจริงสวยกว่า</b> ใส่รูปเมนูไว้ในหน้าแก้ไขเมนู (📷 ใส่รูป) แล้วรูปจะขึ้นในป้ายราคาด้วย</div>
+      </div>
+      <figure class="shot"><img src="img/10_menu.webp" width="600" height="961" loading="lazy" alt="ตัวอย่างรูปป้ายราคาสินค้า 3 เมนู"><figcaption>ตัวอย่างรูปเมนูราคา (ยังไม่ได้ใส่รูปสินค้า)</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="sell">
+    <div class="sh"><span class="no">ขั้น 7</span><h2>จดยอดขายทุกวัน</h2></div>
+    <p class="lead">จดได้ 2 ทาง จะใช้ทางไหนก็ได้ ยอดรวมเป็นที่เดียวกัน</p>
+    <div class="grid">
+      <div>
+        <h3 style="font-size:18px;margin-bottom:8px">📱 ในแอป</h3>
+        <ol class="do">
+          <li>หน้าแรกกด <span class="btnlike">➕ จดขาย</span> หรือในสมุดร้านค้ากด <span class="btnlike">➕ ขายของ</span></li>
+          <li>แตะชื่อเมนูที่มี ราคาและต้นทุนจะมาเอง ใส่จำนวน</li>
+          <li>แตะ <b>ช่องทาง</b> เช่น Grab แอปใช้ราคา Grab ให้ และจดค่า GP เป็นต้นทุนอัตโนมัติ</li>
+          <li>แตะ <b>บัญชีที่เงินเข้า</b> (กด ➕ เพิ่มบัญชี ตั้งชื่อเรียก เช่น "กสิกร-ส่วนตัว" ไม่ต้องใส่เลขบัญชี)</li>
+          <li>กด <span class="btnlike">บันทึกยอดขาย</span></li>
+        </ol>
+        <p style="margin:14px 0 0">ซื้อของเข้าร้าน กด <span class="btnlike">➖ ซื้อของ/ต้นทุน</span> เลือกหมวดและบัญชีที่จ่าย</p>
+        <h3 style="font-size:18px;margin:22px 0 8px">💬 ในไลน์ พิมพ์ได้เลย</h3>
+        <div class="chat" aria-label="ตัวอย่างการพิมพ์ในไลน์">
+          <div class="me">ขาย กะเพรา 2 grab</div>
+          <div class="who">เตือนใจ</div>
+          <div class="bot">จดยอดขายให้แล้วจ้า +฿140
+กะเพราหมูสับไข่ดาว ×2
+🛵 Grab · 🏦 กสิกร-ส่วนตัว
+ราคาขาย ฿140 · GP Grab 30%+VAT −฿45
+ต้นทุน −฿67 · <b>กำไร ฿28</b></div>
+          <div class="me">ขาย ส้มตำ 3 จาน 150 หน้าร้าน</div>
+          <div class="me">ต้นทุน หมูสับ 2 กิโล 360</div>
+          <div class="me">ค่าแอด 300 +vat</div>
+        </div>
+      </div>
+      <figure class="shot"><img src="img/11_sale.webp" width="600" height="1330" loading="lazy" alt="ฟอร์มจดยอดขาย เลือกเมนูกะเพรา จำนวน 2 ช่องทาง Grab บัญชีกสิกร พร้อมข้อความจะจดค่า GP ให้อัตโนมัติ"><figcaption>จดขายในแอป เลือกช่องทางและบัญชี</figcaption></figure>
+    </div>
+    <div class="tip"><b>จดผิด?</b> ในแอปกด 🗑️ ข้างรายการ ในไลน์พิมพ์ <code>ยกเลิกล่าสุด</code> ถ้ารายการนั้นมีค่า GP แอปจะลบให้คู่กัน</div>
+  </section>
+
+  <section class="step" id="report">
+    <div class="sh"><span class="no">ขั้น 8</span><h2>ดูยอดขาย กำไร และแยกตามแอป/บัญชี</h2></div>
+    <div class="grid rev">
+      <div>
+        <p class="lead">เปิด <span class="btnlike">📊 สมุดร้านค้า</span> เลือกช่วงเวลา วันนี้ · เดือนนี้ · ปีนี้</p>
+        <ul class="plain">
+          <li>แตะ <b>ช่องทาง</b> หรือ <b>บัญชี</b> ด้านบน ดูเฉพาะ Grab หรือเฉพาะบัญชีร้านได้</li>
+          <li><b>กำไรแต่ละสินค้า</b> บอกว่าเมนูไหนทำเงิน เมนูไหนขาดทุน กด 📥 ส่งออกเป็นไฟล์ Excel ได้</li>
+          <li><b>สรุปแยก</b> เทียบยอดขายและกำไรของทุกแอป และทุกบัญชี</li>
+          <li>ในไลน์ พิมพ์ <code>ยอดร้าน</code> <code>ยอดร้านเดือนนี้</code> หรือ <code>ยอดร้าน grab</code></li>
+        </ul>
+        <div class="tip"><b>หน้าแรกขึ้น ⚠️?</b> แปลว่ามีเมนูที่ขาดทุน กดเข้าไปดูว่าเป็นเมนูไหน แอปไหน และควรขึ้นราคาเท่าไร</div>
+      </div>
+      <figure class="shot"><img src="img/12_summary.webp" width="600" height="513" loading="lazy" alt="สมุดร้านค้า ตัวกรองช่องทางและบัญชี ยอดขาย 1,340 ต้นทุน 829.27 กำไร 510.73"><figcaption>ยอดขาย ต้นทุน กำไร + ตัวกรอง</figcaption></figure>
+    </div>
+    <div class="shots2" style="margin-top:20px">
+      <figure class="shot"><img src="img/13_products.webp" width="600" height="721" loading="lazy" alt="ตารางกำไรแต่ละสินค้า ชาไทยเย็น กะเพรา ข้าวผัดกุ้ง"><figcaption>กำไรแต่ละสินค้า</figcaption></figure>
+      <figure class="shot"><img src="img/14_breakdown.webp" width="600" height="438" loading="lazy" alt="สรุปแยกตามช่องทาง หน้าร้าน Grab LINE MAN และแยกตามบัญชี"><figcaption>สรุปแยกตามแอปและบัญชี</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="order">
+    <div class="sh"><span class="no">ขั้น 9</span><h2>รับออเดอร์ล่วงหน้า มัดจำ และเตือนวันส่ง</h2></div>
+    <div class="grid">
+      <div>
+        <p class="lead">เหมาะกับออเดอร์จัดเลี้ยง เค้ก ข้าวกล่องจำนวนมาก พิมพ์ในไลน์บรรทัดเดียว หรือวางโน้ตออเดอร์หลายบรรทัดก็ได้</p>
+        <ul class="plain">
+          <li>แอปจดมัดจำเป็นยอดขาย คำนวณยอดค้าง และ<b>เตือนก่อนส่ง 1 วัน กับเช้าวันส่ง</b></li>
+          <li>รับเงินส่วนที่เหลือ พิมพ์ <code>รับเงิน #1 1500</code> ส่งของแล้ว พิมพ์ <code>ส่งงาน #1</code></li>
+          <li>ส่งรูปสินค้าตามหลังได้ รูปจะติดกับออเดอร์</li>
+          <li>ในแอป กด <span class="btnlike">🧾 ออเดอร์</span> ดูทุกออเดอร์ กด <b>รับเงินครบ</b> · <b>ส่งแล้ว</b> · <b>ลบ</b></li>
+          <li>ถ้าพิมพ์ออเดอร์ซ้ำ แอปจะถามก่อน ไม่จดซ้ำ</li>
+        </ul>
+      </div>
+      <div class="chat" aria-label="ตัวอย่างรับออเดอร์ในไลน์">
+        <div class="me">ออเดอร์ ข้าวกล่อง 50 กล่อง 2500 มัดจำ 1000 ส่ง 15/11 คุณเอ</div>
+        <div class="who">เตือนใจ</div>
+        <div class="bot">🧾 รับออเดอร์ #1 แล้วจ้า
+ข้าวกล่อง 50 กล่อง คุณเอ
+ราคา ฿2,500 · รับแล้ว ฿1,000
+ค้างชำระ ฿1,500
+กำหนดส่ง 15 พ.ย. 69</div>
+        <div class="bot">🔔 น้องไก่จะเตือนก่อนส่ง 1 วัน (9 โมง) และเช้าวันส่ง (8 โมง)</div>
+        <div class="me">รับเงิน #1 1500</div>
+        <div class="me">ส่งงาน #1</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="staff">
+    <div class="sh"><span class="no">ขั้น 10</span><h2>ให้พนักงานช่วยจดยอดขาย</h2></div>
+    <div class="grid">
+      <div>
+        <ol class="do">
+          <li>เจ้าของร้านพิมพ์ในไลน์ <code>เพิ่มพนักงาน</code> จะได้ลิงก์และรหัส 6 หลัก (ใช้ได้ 3 วัน)</li>
+          <li>ส่งลิงก์ให้พนักงาน พนักงานกดแล้วกดส่ง (หรือพิมพ์ <code>เข้าร่วมร้าน 123456</code>)</li>
+          <li>พนักงานพิมพ์ <code>ขาย กะเพรา 2</code> หรือรับออเดอร์ ยอดจะเข้าสมุดร้านของเจ้าของ พร้อมชื่อคนจด</li>
+          <li>พนักงานไม่เห็นต้นทุนและกำไรของร้าน</li>
+        </ol>
+        <p style="margin:12px 0 0">ดูรายชื่อ <code>พนักงาน</code> · เอาออก <code>ลบพนักงาน 1</code> · พนักงานออกเอง <code>ออกจากร้าน</code></p>
+        <div class="tip"><b>ผู้ช่วยร้านตลอดชีพ</b> เพิ่มพนักงานได้ 1 คน</div>
+      </div>
+      <div class="chat" aria-label="ตัวอย่างพนักงานจดยอดขาย">
+        <div class="who">พนักงาน</div>
+        <div class="me">ขาย ชาไทย 3 หน้าร้าน</div>
+        <div class="who">เตือนใจ</div>
+        <div class="bot">✅ จดยอดขายเข้าร้านแล้วจ้า
+ชาไทยเย็น ×3 ฿105
+🛵 หน้าร้าน · 🏦 กสิกร-ส่วนตัว
+
+วันนี้คุณจดไป 1 รายการ · ฿105</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="tax">
+    <div class="sh"><span class="no">ขั้น 11</span><h2>รายงานภาษีและส่งออกไฟล์</h2></div>
+    <div class="grid rev">
+      <div>
+        <ol class="do">
+          <li>หน้าแรกกด <span class="btnlike">📄 ภาษี · ไฟล์</span> หรือพิมพ์ในไลน์ <code>รายงานภาษี</code></li>
+          <li>ได้รายงานเงินสดรับ-จ่ายทั้งปี จากยอดขายและต้นทุนที่จดไว้จริง</li>
+          <li>กรองดูเฉพาะแอปหรือเฉพาะบัญชีได้ มีตารางแยกตามแอป บัญชี และสินค้า</li>
+          <li>ใบคำนวณภาษี เลือก <b>บุคคลธรรมดา</b> หรือ <b>นิติบุคคล (หจก./บริษัท)</b> เทียบหักเหมา 60% กับหักตามจริงให้</li>
+          <li>กด <span class="btnlike">🖨️ พิมพ์ / บันทึก PDF</span> หรือ <span class="btnlike">📥 ไฟล์ Excel</span></li>
+        </ol>
+        <div class="tip"><b>ภาษีคิดตามเจ้าของเงิน</b> ถ้าทุกบัญชีเป็นของคุณคนเดียว ตอนยื่นจริงให้ดูแบบ "ทั้งหมด" ตัวเลขเป็นการประมาณ ก่อนยื่นให้นักบัญชีช่วยดูอีกครั้ง</div>
+        <p style="font-size:14px;color:var(--sub);margin:10px 0 0">ลิงก์รายงานใช้ได้ 7 วัน กดเปิดใหม่ได้ตลอด</p>
+      </div>
+      <figure class="shot"><img src="img/15_tax.webp" width="600" height="1385" loading="lazy" alt="รายงานเงินสดรับจ่ายปีภาษี 2569 มีปุ่มพิมพ์ PDF ไฟล์ Excel ตัวกรองช่องทางและบัญชี และตารางแยกตามช่องทาง"><figcaption>รายงานทั้งปี + ตัวกรอง</figcaption></figure>
+    </div>
+    <div class="shots2" style="margin-top:20px;max-width:300px">
+      <figure class="shot"><img src="img/16_taxcalc.webp" width="600" height="1085" loading="lazy" alt="ใบคำนวณภาษี เงินได้ 40(8) หักเหมา 60% หักลดหย่อน เงินได้สุทธิ และภาษีที่ต้องชำระ"><figcaption>ใบคำนวณภาษี (ประมาณการ)</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="step" id="cmd">
+    <div class="sh"><span class="no">สรุป</span><h2>คำสั่งในไลน์ที่ใช้บ่อย</h2></div>
+    <p class="lead">กด <b>คัดลอก</b> แล้ววางในแชตเตือนใจได้เลย คำว่า grab, lineman, หน้าร้าน, ชื่อบัญชี ใส่ไว้ท้ายข้อความเพื่อแยกยอด</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>อยากทำ</th><th>พิมพ์</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>จดขายเมนูที่ตั้งราคาไว้</td><td><code>ขาย กะเพรา 3</code></td><td><button class="cp" data-c="ขาย กะเพรา 3">คัดลอก</button></td></tr>
+          <tr><td>จดขายผ่านแอป (หัก GP ให้)</td><td><code>ขาย กะเพรา 2 grab</code></td><td><button class="cp" data-c="ขาย กะเพรา 2 grab">คัดลอก</button></td></tr>
+          <tr><td>จดขาย ใส่ราคาเอง</td><td><code>ขาย ส้มตำ 2 จาน 100</code></td><td><button class="cp" data-c="ขาย ส้มตำ 2 จาน 100">คัดลอก</button></td></tr>
+          <tr><td>ระบุบัญชีที่เงินเข้า</td><td><code>ขาย กะเพรา 1 หน้าร้าน เข้ากสิกร-ส่วนตัว</code></td><td><button class="cp" data-c="ขาย กะเพรา 1 หน้าร้าน เข้ากสิกร-ส่วนตัว">คัดลอก</button></td></tr>
+          <tr><td>จดต้นทุน/ซื้อของเข้าร้าน</td><td><code>ต้นทุน ไข่ 120</code></td><td><button class="cp" data-c="ต้นทุน ไข่ 120">คัดลอก</button></td></tr>
+          <tr><td>จดค่าโฆษณา</td><td><code>ค่าแอด 500 +vat</code></td><td><button class="cp" data-c="ค่าแอด 500 +vat">คัดลอก</button></td></tr>
+          <tr><td>รับออเดอร์ + เตือนวันส่ง</td><td><code>ออเดอร์ เค้ก 1200 มัดจำ 500 ส่ง 5/12</code></td><td><button class="cp" data-c="ออเดอร์ เค้ก 1200 มัดจำ 500 ส่ง 5/12">คัดลอก</button></td></tr>
+          <tr><td>รับเงินที่เหลือของออเดอร์</td><td><code>รับเงิน #1 700</code></td><td><button class="cp" data-c="รับเงิน #1 700">คัดลอก</button></td></tr>
+          <tr><td>ส่งออเดอร์แล้ว</td><td><code>ส่งงาน #1</code></td><td><button class="cp" data-c="ส่งงาน #1">คัดลอก</button></td></tr>
+          <tr><td>ยอดวันนี้</td><td><code>ยอดร้าน</code></td><td><button class="cp" data-c="ยอดร้าน">คัดลอก</button></td></tr>
+          <tr><td>ยอดเดือนนี้</td><td><code>ยอดร้านเดือนนี้</code></td><td><button class="cp" data-c="ยอดร้านเดือนนี้">คัดลอก</button></td></tr>
+          <tr><td>ยอดเฉพาะแอป/บัญชี</td><td><code>ยอดขายเดือนนี้ grab</code></td><td><button class="cp" data-c="ยอดขายเดือนนี้ grab">คัดลอก</button></td></tr>
+          <tr><td>ยกเลิกรายการล่าสุด</td><td><code>ยกเลิกล่าสุด</code></td><td><button class="cp" data-c="ยกเลิกล่าสุด">คัดลอก</button></td></tr>
+          <tr><td>ชวนพนักงาน</td><td><code>เพิ่มพนักงาน</code></td><td><button class="cp" data-c="เพิ่มพนักงาน">คัดลอก</button></td></tr>
+          <tr><td>รายงานภาษีทั้งปี</td><td><code>รายงานภาษี</code></td><td><button class="cp" data-c="รายงานภาษี">คัดลอก</button></td></tr>
+          <tr><td>เปิดคู่มือนี้ในไลน์</td><td><code>คู่มือร้าน</code></td><td><button class="cp" data-c="คู่มือร้าน">คัดลอก</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="step" id="faq">
+    <div class="sh"><span class="no">ถาม-ตอบ</span><h2>คำถามที่พบบ่อย</h2></div>
+    <details><summary>ซื้อแล้วใช้ได้นานแค่ไหน ต้องจ่ายรายเดือนไหม</summary><p>จ่ายครั้งเดียว ใช้ได้ตลอดชีพ ไม่มีค่ารายเดือน ผูกกับบัญชีไลน์ที่ซื้อ</p></details>
+    <details><summary>ซื้อแล้ว แต่ในแอปยังขึ้นให้ซื้ออยู่</summary><p>ปิดแอปแล้วเปิดใหม่จากเมนูไลน์เตือนใจ 1–2 ครั้ง ถ้ายังไม่ขึ้น พิมพ์ในไลน์ว่า "ร้านค้า" ระบบจะเช็กให้ หรือส่งสลิปให้แอดมินตรวจ</p></details>
+    <details><summary>เปลี่ยนมือถือ ข้อมูลจะหายไหม</summary><p>เปิดแอปจากเมนูไลน์เตือนใจ (บัญชีไลน์เดิม) ข้อมูลร้าน เมนู และต้นทุนจะดึงกลับมาให้</p></details>
+    <details><summary>ใส่ต้นทุนแล้วตัวเลขดูแปลก เช่น ต้นทุนสูงเกินราคา</summary><p>เช็กว่าใส่ "ต้นทุนต่อจาน" ไม่ใช่ราคาที่ซื้อมาทั้งถุง ถ้าซื้อเป็นถุง/แพ็ค ใช้ส่วน "ช่วยคิดจากราคาที่ซื้อมา" ให้แอปหารให้ ถ้าต้นทุนสูงเกินราคาขาย แอปจะขึ้นเตือน</p></details>
+    <details><summary>ราคาแนะนำต่ำกว่าราคาที่ขายอยู่ ต้องลดราคาไหม</summary><p>ไม่ต้อง ราคาแนะนำคือราคาที่ได้กำไรตามเป้า ถ้าราคาที่ตั้งสูงกว่า แปลว่ากำไรเกินเป้าแล้ว แอปจะขึ้น ✅</p></details>
+    <details><summary>ร้านได้ GP ไม่เท่ากับที่แอปตั้งไว้</summary><p>แก้ได้เอง ในหน้าคำนวณต้นทุน หัวข้อ "ช่องทางขาย และค่า GP" แก้ตัวเลข % และติ๊ก/ไม่ติ๊ก VAT ให้ตรงกับสัญญา</p></details>
+    <details><summary>ขายหลายแอป เงินเข้าหลายบัญชี จะสรุปยังไง</summary><p>ตอนจดขายเลือกช่องทางและบัญชี แล้วในสมุดร้านค้าและรายงานภาษีกรองดูเฉพาะแอปหรือบัญชีได้ หรือดูรวมทั้งหมด</p></details>
+    <details><summary>แอปเก็บเลขบัญชีธนาคารไหม</summary><p>ไม่เก็บ ใส่แค่ชื่อเรียกบัญชี เช่น "กสิกร-ส่วนตัว" แอปจะไม่รับเลขบัญชี</p></details>
+  </section>
+
+  <footer class="foot">
+    <a class="back" href="../">← กลับไปใช้แอป</a>
+    <div>ติดตรงไหน พิมพ์ถามในไลน์เตือนใจได้เลย 🐥</div>
+  </footer>
+</main>
+<script>
+document.addEventListener('click',function(e){var b=e.target.closest('.cp');if(!b)return;var t=b.getAttribute('data-c'),done=function(){b.textContent='คัดลอกแล้ว';b.classList.add('ok');setTimeout(function(){b.textContent='คัดลอก';b.classList.remove('ok')},1500)};
+ try{navigator.clipboard.writeText(t).then(done,function(){sel(b)})}catch(x){sel(b)}
+ function sel(b){var c=b.closest('tr').querySelector('code'),r=document.createRange();r.selectNodeContents(c);var s=getSelection();s.removeAllRanges();s.addRange(r)}});
+</script>
+</body>
+</html>
